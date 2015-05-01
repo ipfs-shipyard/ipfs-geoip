@@ -2,6 +2,12 @@
 
 Proof of concept
 
+# b-tree
+
+The utility geoip-gen reads csv files provided from GeoLite, and turns them into a 32-way branching b-tree, which is stored as ipfs json objects.
+
+#
+
 includes the generator, that can be called like this:
 
 ```bash
@@ -18,7 +24,7 @@ node lookup.js QmaFjNciRUCdD9PxdLu22rUjMs5hJGDgCstrthrEXw4akB 8.8.8.8
 
 which will result in:
 
-```json
+```js
 [ 'US',
   'CA',
   'Mountain View',
