@@ -9,6 +9,6 @@ geoip.lookup(process.argv[2], process.argv[3], function (err, result) {
   if (err) {
     console.log("Error: " + err)
   } else {
-    console.log("Result: " + result)
+    console.log("Result: " + JSON.stringify(result, null, 2))
   }
 })

@@ -1,10 +1,11 @@
 {
   "name": "ipfs-geoip",
-  "version": "1.1.1",
+  "version": "1.2.1",
   "description": "Library for ipfs geoip lookups",
   "main": "ipfs-geoip.js",
   "dependencies": {
-    "ipfs-api": "^1.2.1"
+    "ipfs-api": "^1.2.1",
+    "countrynames": "^0.1.1"
   },
   "repository": {
     "type": "git",
