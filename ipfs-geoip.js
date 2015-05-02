@@ -15,13 +15,13 @@ function _lookup (hash, lookfor, cb) {
       var child = 0;
       if (obj.type == 'Node') {
         while (obj.mins[child] &&
-               obj.mins[child] < lookfor) {
+               obj.mins[child] <= lookfor) {
           child++
         }
         return _lookup(res.Links[child-1].Hash, lookfor, cb)
       } else if (obj.type == 'Leaf') {
         while (obj.data[child] &&
-               obj.data[child].min < lookfor) {
+               obj.data[child].min <= lookfor) {
           child++
         }
         if (obj.data[child-1].data) {
