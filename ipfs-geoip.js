@@ -6,23 +6,24 @@ function aton4 (a) {
 }
 
 function _lookup (hash, lookfor, cb) {
+
+	console.log("lookup: ", hash)
+
   ipfs.object.get(hash, function (err, res) {
     var obj = JSON.parse(res.Data)
 
     var child = 0;
     if (obj.type == 'Node') {
-      while (obj.mins[child] < lookfor &&
-             obj.mins[child+1]) {
+      while (obj.mins[child] &&
+						 obj.mins[child] < lookfor) {
         child++
       }
       return _lookup(res.Links[child-1].Hash, lookfor, cb)
     } else if (obj.type == 'Leaf') {
-
-      while (obj.data[child].min < lookfor &&
-             obj.data[child+1]) {
+      while (obj.data[child] &&
+						 obj.data[child].min < lookfor) {
         child++
       }
-
       cb(null, obj.data[child-1].data)
     }
   })
