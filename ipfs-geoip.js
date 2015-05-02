@@ -6,25 +6,30 @@ function aton4 (a) {
 }
 
 function _lookup (hash, lookfor, cb) {
-
-	console.log("lookup: ", hash)
-
   ipfs.object.get(hash, function (err, res) {
-    var obj = JSON.parse(res.Data)
+    if (err) {
+      cb(err, null)
+    } else {
+      var obj = JSON.parse(res.Data)
 
-    var child = 0;
-    if (obj.type == 'Node') {
-      while (obj.mins[child] &&
-						 obj.mins[child] < lookfor) {
-        child++
+      var child = 0;
+      if (obj.type == 'Node') {
+        while (obj.mins[child] &&
+               obj.mins[child] < lookfor) {
+          child++
+        }
+        return _lookup(res.Links[child-1].Hash, lookfor, cb)
+      } else if (obj.type == 'Leaf') {
+        while (obj.data[child] &&
+               obj.data[child].min < lookfor) {
+          child++
+        }
+        if (obj.data[child-1].data) {
+          cb(null, obj.data[child-1].data)
+        } else {
+          cb("Unmapped range", null)
+        }
       }
-      return _lookup(res.Links[child-1].Hash, lookfor, cb)
-    } else if (obj.type == 'Leaf') {
-      while (obj.data[child] &&
-						 obj.data[child].min < lookfor) {
-        child++
-      }
-      cb(null, obj.data[child-1].data)
     }
   })
 }
