@@ -1,4 +1,3 @@
-var ipfs = require('ipfs-api')()
 var countrynames = require('countrynames')
 
 function aton4 (a) {
@@ -30,7 +29,7 @@ function formatData (data) {
   return obj
 }
 
-function _lookup (hash, lookfor, cb) {
+function _lookup (ipfs, hash, lookfor, cb) {
   ipfs.object.get(hash, function (err, res) {
     if (err) {
       cb(err, null)
@@ -43,7 +42,7 @@ function _lookup (hash, lookfor, cb) {
                obj.mins[child] <= lookfor) {
           child++
         }
-        return _lookup(res.Links[child-1].Hash, lookfor, cb)
+        return _lookup(ipfs, res.Links[child-1].Hash, lookfor, cb)
       } else if (obj.type == 'Leaf') {
         while (obj.data[child] &&
                obj.data[child].min <= lookfor) {
@@ -59,8 +58,8 @@ function _lookup (hash, lookfor, cb) {
   })
 }
 
-function lookup (hash, ip, cb) {
-  _lookup(hash, aton4(ip), cb)
+function lookup (ipfs, hash, ip, cb) {
+  _lookup(ipfs, hash, aton4(ip), cb)
 }
 
 module.exports = {lookup: lookup,
