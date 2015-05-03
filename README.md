@@ -19,7 +19,7 @@ This takes quite a long time to import, but you only need to do it once globally
 and a lookup, for example, in the example directory
 
 ```
-node lookup.js QmaFjNciRUCdD9PxdLu22rUjMs5hJGDgCstrthrEXw4akB 8.8.8.8
+node example/lookup.js 8.8.8.8
 ```
 
 which will result in:

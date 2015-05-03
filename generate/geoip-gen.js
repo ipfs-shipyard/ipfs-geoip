@@ -2,22 +2,49 @@ var ipfs = require('ipfs-api')()
 var csv = require('csv')
 var fs = require('fs')
 var Q = require('kew')
+var iconv = require('iconv-lite')
 
 var CHILDREN = 32
 
-function parseLocations(file) {
+function parseCountries(file) {
   var def = Q.defer()
-  var locations = {}
+  var countries = {}
 
   fs.readFile(file, function (err, data) {
     csv.parse(data, function (err, parsed) {
       parsed.forEach(function (row) {
-        locations[parseInt(row[0])] = row.slice(1)
+        countries[row[1]] = row[0]
+      })
+      def.resolve(countries)
+    })
+  })
+
+  return def.promise
+}
+
+function parseLocations(file, countries) {
+  var def = Q.defer()
+  var locations = {}
+
+  try {
+
+  fs.readFile(file, function (err, data) {
+
+    csv.parse(iconv.decode(data, 'latin1'), function (err, parsed) {
+      parsed.forEach(function (row) {
+        var locid = parseInt(row[0])
+        var data = row
+        data[0] = countries[row[1]]
+        locations[locid] = data
       })
       console.log("parsed locations")
       def.resolve(locations)
     })
   })
+
+  } catch (e) {
+    console.log(e)
+  }
 
   return def.promise
 }
@@ -161,14 +188,19 @@ function usage () {
 }
 
 function main () {
-  parseLocations(process.cwd() + "/" + process.argv[3]).then(function (locations) {
-    parseBlocks(process.cwd() + "/" + process.argv[2], locations).then(function (entries) {
-      toNode(entries).then(function(result) {
-        console.log("done!")
-        console.log(result.hash)
-      })
+  parseCountries(process.cwd() + "/../country_data/countries.csv")
+    .then(function (countries) {
+      parseLocations(process.cwd() + "/" + process.argv[3], countries)
+        .then(function (locations) {
+          parseBlocks(process.cwd() + "/" + process.argv[2], locations)
+            .then(function (entries) {
+              toNode(entries).then(function(result) {
+                console.log("done!")
+                console.log(result.hash)
+              })
+            })
+        })
     })
-  })
 }
 
 if (process.argv.length != 4) {
