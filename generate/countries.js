@@ -9,6 +9,6 @@ fs.readFile("/home/krl/hax/ipfs-geoip/data/countries.csv", function (err, data) 
         countries[row[1]] = row[0]
       }
     })
-    console.log("module.exports = " + JSON.stringify(countries))
+    console.log("COUNTRIES = " + JSON.stringify(countries)+";")
   })
 })
