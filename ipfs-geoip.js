@@ -1,22 +1,15 @@
-var countrynames = require('countrynames')
+var countries = require('country-data').countries
 
 function aton4 (a) {
   a = a.split(/\./)
   return ((parseInt(a[0], 10)<<24)>>>0) + ((parseInt(a[1], 10)<<16)>>>0) + ((parseInt(a[2], 10)<<8)>>>0) + (parseInt(a[3], 10)>>>0)
 }
 
-function toTitleCase (str) {
-    return str.replace(/\w\S*/g,
-                       function(txt){
-                         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-                       })
-}
-
 function formatData (data) {
   var obj = {}
   if (data[0]) {
     obj.country_code = data[0]
-    obj.country_name = toTitleCase(countrynames.getName(data[0]))
+    obj.country_name = countries[data[0]].name
   }
   if (data[1]) obj.region_code = data[1]
   if (data[2]) obj.city = data[2]
