@@ -1,4 +1,4 @@
-var countries = require('country-data').countries
+var countries = require('./countries')
 
 function aton4 (a) {
   a = a.split(/\./)
@@ -8,8 +8,11 @@ function aton4 (a) {
 function formatData (data) {
   var obj = {}
   if (data[0]) {
-    obj.country_code = data[0]
-    obj.country_name = countries[data[0]].name
+    var cc = data[0]
+    obj.country_code = cc
+    if (countries[cc]) {
+      obj.country_name = countries[cc]
+    }
   }
   if (data[1]) obj.region_code = data[1]
   if (data[2]) obj.city = data[2]
