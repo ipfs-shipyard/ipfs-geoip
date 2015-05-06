@@ -1,10 +1,10 @@
-// countries is added in make all
-var COUNTRIES = {}
-var GEOIP_ROOT = "QmQQ3BUpPjgYiTdhp4H9YWSCtoFXs8t91njhpvXNNLd3yB"
+'use strict'
+
+var GEOIP_ROOT = 'QmQQ3BUpPjgYiTdhp4H9YWSCtoFXs8t91njhpvXNNLd3yB'
 
 function aton4 (a) {
   a = a.split(/\./)
-  return ((parseInt(a[0], 10)<<24)>>>0) + ((parseInt(a[1], 10)<<16)>>>0) + ((parseInt(a[2], 10)<<8)>>>0) + (parseInt(a[3], 10)>>>0)
+  return ((parseInt(a[0], 10) << 24) >>> 0) + ((parseInt(a[1], 10) << 16) >>> 0) + ((parseInt(a[2], 10) << 8) >>> 0) + (parseInt(a[3], 10) >>> 0)
 }
 
 function formatData (data) {
@@ -30,22 +30,22 @@ function _lookup (ipfs, hash, lookfor, cb) {
     } else {
       var obj = JSON.parse(res.Data)
 
-      var child = 0;
-      if (obj.type == 'Node') {
+      var child = 0
+      if (obj.type === 'Node') {
         while (obj.mins[child] &&
                obj.mins[child] <= lookfor) {
           child++
         }
-        return _lookup(ipfs, res.Links[child-1].Hash, lookfor, cb)
-      } else if (obj.type == 'Leaf') {
+        return _lookup(ipfs, res.Links[child - 1].Hash, lookfor, cb)
+      } else if (obj.type === 'Leaf') {
         while (obj.data[child] &&
                obj.data[child].min <= lookfor) {
           child++
         }
-        if (obj.data[child-1].data) {
-          cb(null, formatData(obj.data[child-1].data))
+        if (obj.data[child - 1].data) {
+          cb(null, formatData(obj.data[child - 1].data))
         } else {
-          cb("Unmapped range", null)
+          cb('Unmapped range', null)
         }
       }
     }
