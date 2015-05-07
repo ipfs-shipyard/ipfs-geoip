@@ -1,9 +1,10 @@
 {
   "name": "ipfs-geoip",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Library for ipfs geoip lookups",
   "main": "ipfs-geoip.js",
   "dependencies": {
+    "memoizee": "^0.3.8"
   },
   "repository": {
     "type": "git",

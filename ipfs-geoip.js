@@ -1,4 +1,5 @@
 'use strict'
+var memoize = require('memoizee')
 
 var GEOIP_ROOT = 'QmQQ3BUpPjgYiTdhp4H9YWSCtoFXs8t91njhpvXNNLd3yB'
 
@@ -23,6 +24,8 @@ function formatData (data) {
   return obj
 }
 
+var memoized_lookup
+
 function _lookup (ipfs, hash, lookfor, cb) {
   ipfs.object.get(hash, function (err, res) {
     if (err) {
@@ -36,7 +39,7 @@ function _lookup (ipfs, hash, lookfor, cb) {
                obj.mins[child] <= lookfor) {
           child++
         }
-        return _lookup(ipfs, res.Links[child - 1].Hash, lookfor, cb)
+        return memoized_lookup(ipfs, res.Links[child - 1].Hash, lookfor, cb)
       } else if (obj.type === 'Leaf') {
         while (obj.data[child] &&
                obj.data[child].min <= lookfor) {
@@ -52,14 +55,16 @@ function _lookup (ipfs, hash, lookfor, cb) {
   })
 }
 
+memoized_lookup = memoize(_lookup, {async: true})
+
 function lookup (ipfs, ip, cb) {
-  _lookup(ipfs, GEOIP_ROOT, aton4(ip), cb)
+  memoized_lookup(ipfs, GEOIP_ROOT, aton4(ip), cb)
 }
 
 function lookup_root (ipfs, hash, ip, cb) {
-  _lookup(ipfs, hash, aton4(ip), cb)
+  memoized_lookup(ipfs, hash, aton4(ip), cb)
 }
 
 module.exports = {lookup: lookup,
                   lookup_root: lookup_root,
-                  _lookup: _lookup}
+                  _lookup: memoized_lookup}
