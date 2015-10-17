@@ -1,3 +1,5 @@
+'use strict'
+
 var geoip = require('../')
 var ipfs = require('ipfs-api')()
 
@@ -11,5 +13,13 @@ geoip.lookup(ipfs, process.argv[2], function (err, result) {
     console.log('Error: ' + err)
   } else {
     console.log('Result: ' + JSON.stringify(result, null, 2))
+  }
+})
+
+geoip.lookupPretty(ipfs, '/ip4/' + process.argv[2], function (err, result) {
+  if (err) {
+    console.log('Error: ' + err)
+  } else {
+    console.log('Pretty result: %s', result.formatted)
   }
 })
