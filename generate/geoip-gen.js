@@ -135,7 +135,6 @@ function toNode (things) {
                                  data: things})
 
       data = new Buffer(JSON.stringify({Data: leaf}))
-
     } else {
       // btree node
       var node = JSON.stringify({type: 'Node',
