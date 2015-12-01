@@ -1,6 +1,6 @@
 {
   "name": "ipfs-geoip",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Library for ipfs geoip lookups",
   "main": "ipfs-geoip.js",
   "dependencies": {
