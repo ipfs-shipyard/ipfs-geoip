@@ -11,11 +11,14 @@
     "url": "https://github.com/krl/ipfs-geoip"
   },
   "devDependencies": {
+    "chai": "^3.4.1",
     "csv": "^0.4.2",
     "eslint-plugin-react": "^3.5.1",
     "iconv-lite": "^0.4.8",
     "ipfs-api": "^2.4.1",
+    "ipfsd-ctl": "^0.7.1",
     "kew": "^0.7.0",
+    "mocha": "^2.3.4",
     "pre-commit": "^1.0.6",
     "standard": "^5.3.1"
   },
@@ -33,8 +36,8 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/.bin/standard"
+    "test": "mocha",
+    "lint": "standard"
   },
   "pre-commit": [
     "lint"
