@@ -8,7 +8,7 @@ const IPFS = require('ipfs-api')
 const ctl = require('ipfsd-ctl')
 
 describe('lookup', function () {
-  this.timeout(20 * 1000)
+  this.timeout(100 * 1000)
   let ipfs
 
   before((done) => {
