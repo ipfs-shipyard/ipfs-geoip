@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+'use strict'
+
+const Gauge = require('gauge')
+const gen = require('../generate')
+const API = require('ipfs-api')
+
+function handleNoApi () {
+  console.error('No ipfs daemon running. Please start one')
+  process.exit(1)
+}
+
+// -- CLI interaction
+
+const ipfs = new API()
+
+ipfs.id()
+  .then((id) => {
+    if (!id) handleNoApi()
+  }, handleNoApi)
+  .then(() => {
+    const gauge = new Gauge()
+    let length = 0
+    let counter = 0
+
+    gen.progress.on('progress', (event) => {
+      if (event.type === 'node') {
+        length = event.length
+      }
+
+      if (event.type === 'put') {
+        counter++
+        gauge.show('Uploading', (counter / (length / 32)))
+      }
+
+      if (event.status === 'start' && event.type !== 'put') {
+        gauge.show(event.type)
+      }
+    })
+
+    gauge.show('Starting', 0.0001)
+    return gen.main(ipfs)
+  })
+  .then((hash) => {
+    console.log('Finished with root hash %s', hash)
+    process.exit(0)
+  })
+  .catch((err) => {
+    console.error(err.stack)
+    process.exit(1)
+  })

@@ -1,7 +1,12 @@
 # IPFS GeoIP
 
-> *Proof of concept:* Geoip lookup over ipfs
+[![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
+[![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
+[![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![Dependency Status](https://david-dm.org/ipfs/ipfs-geoip.svg?style=flat-square)](https://david-dm.org/ipfs/ipfs-geoip)
+[![Travis CI](https://img.shields.io/travis/ipfs/ipfs-geoip/master.svg?style=flat-square)](https://travis-ci.org/ipfs/ipfs-geoip)
 
+> Geoip lookup over ipfs
 
 ## API
 
@@ -33,10 +38,10 @@ a `formatted` property that looks like this: `Mountain View, CA, United States, 
 
 The utility geoip-gen reads csv files provided from GeoLite, and turns them into a 32-way branching b-tree, which is stored as ipfs json objects.
 
-There is a generator included, that can be called like this:
+There is a generator included, that can be run with
 
 ```bash
-$ node geoip-gen.js path/GeoLite-Blocks.csv path/GeoLite-Location.csv
+$ npm run generate
 ```
 
 This takes quite a long time to import, but you only need to do it once globally to use the lookup feature.
@@ -61,6 +66,10 @@ Result: {
 }
 Pretty result: Mountain View, CA, United States, Earth
 ```
+
+## Root hash
+
+The current root hash for lookups is `QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ`.
 
 ## License
 

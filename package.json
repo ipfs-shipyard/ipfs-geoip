@@ -2,22 +2,30 @@
   "name": "ipfs-geoip",
   "version": "1.4.5",
   "description": "Library for ipfs geoip lookups",
-  "main": "ipfs-geoip.js",
+  "main": "index.js",
   "dependencies": {
+    "inet_ipv4": "^1.0.0",
     "memoizee": "^0.3.8"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/krl/ipfs-geoip"
+    "url": "https://github.com/ipfs/ipfs-geoip"
   },
   "devDependencies": {
+    "bl": "^1.1.2",
+    "bluebird": "^3.3.1",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.2.0",
     "csv": "^0.4.2",
     "eslint-plugin-react": "^3.5.1",
+    "gauge": "^1.2.5",
     "iconv-lite": "^0.4.8",
-    "ipfs-api": "^2.4.1",
-    "kew": "^0.7.0",
+    "ipfs-api": "^2.13.0",
+    "ipfsd-ctl": "^0.8.1",
+    "lodash": "^4.5.0",
+    "mocha": "^2.4.5",
     "pre-commit": "^1.0.6",
-    "standard": "^5.3.1"
+    "standard": "^6.0.5"
   },
   "keywords": [
     "ipfs",
@@ -26,17 +34,21 @@
   "author": "Kristoffer Ström <kristoffer@rymdkoloni.se>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/krl/ipfs-geoip/issues"
+    "url": "https://github.com/ipfs/ipfs-geoip/issues"
   },
-  "homepage": "https://github.com/krl/ipfs-geoip",
+  "homepage": "https://github.com/ipfs/ipfs-geoip",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "node_modules/.bin/standard"
+    "test": "mocha",
+    "lint": "node_modules/.bin/standard",
+    "generate": "bin/generate"
   },
   "pre-commit": [
     "lint"
-  ]
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  }
 }
