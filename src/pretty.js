@@ -7,7 +7,7 @@ function isLocal (address) {
   if (split[0] === '10') return true
   if (split[0] === '127') return true
   if (split[0] === '192' && split[1] === '168') return true
-  if (split[0] === '172' && +split[1] >= 16 && +split[1] <= 31) return true
+  if (split[0] === '172' && Number(split[1]) >= 16 && Number(split[1]) <= 31) return true
   return false
 }
 

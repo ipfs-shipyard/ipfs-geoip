@@ -8,7 +8,7 @@ const formatData = require('./format')
 
 const GEOIP_ROOT = mh.fromB58String('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ')
 
-let memoized_lookup
+let memoizedLookup
 
 function _lookup (ipfs, hash, lookfor, cb) {
   ipfs.object.get(hash, (err, res) => {
@@ -34,7 +34,7 @@ function _lookup (ipfs, hash, lookfor, cb) {
         return cb(new Error('Failed to lookup node'))
       }
 
-      return memoized_lookup(ipfs, next.hash, lookfor, cb)
+      return memoizedLookup(ipfs, next.hash, lookfor, cb)
     } else if (obj.type === 'Leaf') {
       while (obj.data[child] && obj.data[child].min <= lookfor) {
         child++
@@ -55,8 +55,8 @@ function _lookup (ipfs, hash, lookfor, cb) {
   })
 }
 
-memoized_lookup = memoize(_lookup, {async: true})
+memoizedLookup = memoize(_lookup, {async: true})
 
 module.exports = function lookup (ipfs, ip, cb) {
-  memoized_lookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)
+  memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)
 }
