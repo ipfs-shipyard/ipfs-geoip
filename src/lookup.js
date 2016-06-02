@@ -10,12 +10,12 @@ const GEOIP_ROOT = 'QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ'
 let memoized_lookup
 
 function _lookup (ipfs, hash, lookfor, cb) {
-  ipfs.object.get(hash, (err, res) => {
+  ipfs.object.get(hash, {enc: 'base58'}, (err, res) => {
     if (err) return cb(err)
 
     let obj
     try {
-      obj = JSON.parse(res.Data)
+      obj = JSON.parse(res.data)
     } catch (err) {
       return cb(err)
     }
@@ -27,7 +27,7 @@ function _lookup (ipfs, hash, lookfor, cb) {
         child++
       }
 
-      const next = res.Links[child - 1]
+      const next = res.links[child - 1]
 
       if (!next || !next.Hash) {
         return cb(new Error('Failed to lookup node'))

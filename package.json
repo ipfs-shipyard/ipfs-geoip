@@ -2,30 +2,42 @@
   "name": "ipfs-geoip",
   "version": "2.0.0",
   "description": "Library for ipfs geoip lookups",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
+  "scripts": {
+    "lint": "aegir-lint",
+    "build": "aegir-build",
+    "test": "aegir-test",
+    "test:node": "aegir-test --env node",
+    "test:browser": "aegir-test --env browser",
+    "release": "aegir-release",
+    "release-minor": "aegir-release --type minor",
+    "release-major": "aegir-release --type major",
+    "coverage": "aegir-coverage",
+    "coverage-publish": "aegir-coverage publish",
+    "generate": "bin/generate"
+  },
   "dependencies": {
     "inet_ipv4": "^1.0.0",
-    "memoizee": "^0.3.8"
+    "memoizee": "^0.3.10"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/ipfs-geoip"
   },
   "devDependencies": {
+    "aegir": "^3.2.0",
     "bl": "^1.1.2",
-    "bluebird": "^3.3.1",
+    "bluebird": "^3.4.0",
     "chai": "^3.5.0",
-    "chai-as-promised": "^5.2.0",
-    "csv": "^0.4.2",
-    "eslint-plugin-react": "^3.5.1",
-    "gauge": "^1.2.5",
-    "iconv-lite": "^0.4.8",
-    "ipfs-api": "^2.13.0",
-    "ipfsd-ctl": "^0.8.1",
-    "lodash": "^4.5.0",
-    "mocha": "^2.4.5",
-    "pre-commit": "^1.0.6",
-    "standard": "^6.0.5"
+    "chai-as-promised": "^5.3.0",
+    "csv": "^1.1.0",
+    "gauge": "^2.4.0",
+    "iconv-lite": "^0.4.13",
+    "ipfs-api": "^4.1.0",
+    "ipfsd-ctl": "^0.14.0",
+    "lodash": "^4.13.1",
+    "pre-commit": "^1.1.3"
   },
   "keywords": [
     "ipfs",
@@ -39,11 +51,6 @@
   "homepage": "https://github.com/ipfs/ipfs-geoip",
   "directories": {
     "example": "example"
-  },
-  "scripts": {
-    "test": "mocha",
-    "lint": "node_modules/.bin/standard",
-    "generate": "bin/generate"
   },
   "pre-commit": [
     "lint"

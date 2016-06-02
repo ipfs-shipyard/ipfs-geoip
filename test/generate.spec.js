@@ -6,7 +6,7 @@ const asPromised = require('chai-as-promised')
 chai.use(asPromised)
 const expect = chai.expect
 
-const gen = require('../generate/index.js')
+const gen = require('../src/generate/')
 
 const countries = new Buffer(`
 name,alpha2,countryCallingCodes,alpha3,ioc,currencies,languages,ccTLD,status

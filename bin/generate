@@ -2,7 +2,7 @@
 'use strict'
 
 const Gauge = require('gauge')
-const gen = require('../generate')
+const gen = require('../src/generate')
 const API = require('ipfs-api')
 
 function handleNoApi () {
