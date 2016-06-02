@@ -52,7 +52,7 @@ describe('lookup', function () {
     })
   })
 
-  describe.skip('lookupPretty', () => {
+  describe('lookupPretty', () => {
     it('fails on 127.0.0.1', (done) => {
       geoip.lookupPretty(ipfs, '/ip4/127.0.0.1', function (err, result) {
         expect(err).to.have.property('message', 'Unmapped range')

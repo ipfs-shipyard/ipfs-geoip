@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "inet_ipv4": "^1.0.0",
-    "memoizee": "^0.3.10"
+    "memoizee": "^0.3.10",
+    "multihashes": "^0.2.2"
   },
   "repository": {
     "type": "git",

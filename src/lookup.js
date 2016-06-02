@@ -2,15 +2,16 @@
 
 const memoize = require('memoizee')
 const inet = require('inet_ipv4')
+const mh = require('multihashes')
 
 const formatData = require('./format')
 
-const GEOIP_ROOT = 'QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ'
+const GEOIP_ROOT = mh.fromB58String('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ')
 
 let memoized_lookup
 
 function _lookup (ipfs, hash, lookfor, cb) {
-  ipfs.object.get(hash, {enc: 'base58'}, (err, res) => {
+  ipfs.object.get(hash, (err, res) => {
     if (err) return cb(err)
 
     let obj
