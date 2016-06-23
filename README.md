@@ -3,10 +3,42 @@
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
 [![](https://img.shields.io/badge/project-IPFS-blue.svg?style=flat-square)](http://ipfs.io/)
 [![](https://img.shields.io/badge/freenode-%23ipfs-blue.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23ipfs)
+[![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Dependency Status](https://david-dm.org/ipfs/ipfs-geoip.svg?style=flat-square)](https://david-dm.org/ipfs/ipfs-geoip)
 [![Travis CI](https://img.shields.io/travis/ipfs/ipfs-geoip/master.svg?style=flat-square)](https://travis-ci.org/ipfs/ipfs-geoip)
 
-> Geoip lookup over ipfs
+> geoip lookup over ipfs
+
+## Install
+
+```js
+npm install --save ipfs-geoip
+```
+
+## Usage
+
+```js
+const geoip = require('ipfs-geoip')
+const ipfs = require('ipfs-api')()
+
+var exampleIp = '89.114.95.36'
+
+geoip.lookup(ipfs, exampleIp, (err, result) => {
+  if (err) {
+    console.log('Error: ' + err)
+  } else {
+    console.log('Result: ' + JSON.stringify(result, null, 2))
+  }
+})
+
+geoip.lookupPretty(ipfs, '/ip4/' + exampleIp, (err, result) => {
+  if (err) {
+    console.log('Error: ' + err)
+  } else {
+    console.log('Pretty result: %s', result.formatted)
+  }
+})
+```
 
 ## API
 
@@ -70,6 +102,16 @@ Pretty result: Mountain View, CA, United States, Earth
 ## Root hash
 
 The current root hash for lookups is `QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ`.
+
+## Contribute
+
+Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/ipfs-geoip/issues)!
+
+This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+
+### Want to hack on IPFS?
+
+[![](https://cdn.rawgit.com/jbenet/contribute-ipfs-gif/master/img/contribute.gif)](https://github.com/ipfs/community/blob/master/contributing.md)
 
 ## License
 
