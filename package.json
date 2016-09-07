@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "inet_ipv4": "^1.0.0",
-    "memoizee": "^0.3.8"
+    "memoizee": "^0.4.1"
   },
   "repository": {
     "type": "git",
@@ -16,16 +16,16 @@
     "bluebird": "^3.3.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
-    "csv": "^0.4.2",
-    "eslint-plugin-react": "^3.5.1",
-    "gauge": "^1.2.5",
+    "csv": "^1.1.0",
+    "eslint-plugin-react": "^6.2.0",
+    "gauge": "^2.6.0",
     "iconv-lite": "^0.4.8",
-    "ipfs-api": "^2.13.0",
-    "ipfsd-ctl": "^0.8.1",
+    "ipfs-api": "^8.0.3",
+    "ipfsd-ctl": "^0.14.0",
     "lodash": "^4.5.0",
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.2",
     "pre-commit": "^1.0.6",
-    "standard": "^6.0.5"
+    "standard": "^8.0.0"
   },
   "keywords": [
     "ipfs",
