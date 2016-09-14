@@ -17,7 +17,7 @@
     "chai": "^3.5.0",
     "chai-as-promised": "^5.2.0",
     "csv": "^0.4.2",
-    "eslint-plugin-react": "^3.5.1",
+    "eslint-plugin-react": "^6.2.2",
     "gauge": "^1.2.5",
     "iconv-lite": "^0.4.8",
     "ipfs-api": "^2.13.0",
