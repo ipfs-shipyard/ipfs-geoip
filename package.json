@@ -25,7 +25,7 @@
     "lodash": "^4.5.0",
     "mocha": "^2.4.5",
     "pre-commit": "^1.0.6",
-    "standard": "^6.0.5"
+    "standard": "^8.1.0"
   },
   "keywords": [
     "ipfs",
