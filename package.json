@@ -23,7 +23,7 @@
     "ipfs-api": "^2.13.0",
     "ipfsd-ctl": "^0.8.1",
     "lodash": "^4.5.0",
-    "mocha": "^2.4.5",
+    "mocha": "^3.1.0",
     "pre-commit": "^1.0.6",
     "standard": "^6.0.5"
   },
