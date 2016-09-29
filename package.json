@@ -21,7 +21,7 @@
     "gauge": "^1.2.5",
     "iconv-lite": "^0.4.8",
     "ipfs-api": "^2.13.0",
-    "ipfsd-ctl": "^0.8.1",
+    "ipfsd-ctl": "^0.16.0",
     "lodash": "^4.5.0",
     "mocha": "^2.4.5",
     "pre-commit": "^1.0.6",
