@@ -2,12 +2,13 @@
 
 const memoize = require('memoizee')
 const inet = require('inet_ipv4')
+const mh = require('multihashes')
 
 const formatData = require('./format')
 
-const GEOIP_ROOT = 'QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ'
+const GEOIP_ROOT = mh.fromB58String('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ')
 
-let memoized_lookup
+let memoizedLookup
 
 function _lookup (ipfs, hash, lookfor, cb) {
   ipfs.object.get(hash, (err, res) => {
@@ -15,7 +16,7 @@ function _lookup (ipfs, hash, lookfor, cb) {
 
     let obj
     try {
-      obj = JSON.parse(res.Data)
+      obj = JSON.parse(res.data)
     } catch (err) {
       return cb(err)
     }
@@ -27,13 +28,13 @@ function _lookup (ipfs, hash, lookfor, cb) {
         child++
       }
 
-      const next = res.Links[child - 1]
+      const next = res.links[child - 1]
 
-      if (!next || !next.Hash) {
+      if (!next || !next.hash) {
         return cb(new Error('Failed to lookup node'))
       }
 
-      return memoized_lookup(ipfs, next.Hash, lookfor, cb)
+      return memoizedLookup(ipfs, next.hash, lookfor, cb)
     } else if (obj.type === 'Leaf') {
       while (obj.data[child] && obj.data[child].min <= lookfor) {
         child++
@@ -54,8 +55,8 @@ function _lookup (ipfs, hash, lookfor, cb) {
   })
 }
 
-memoized_lookup = memoize(_lookup, {async: true})
+memoizedLookup = memoize(_lookup, {async: true})
 
 module.exports = function lookup (ipfs, ip, cb) {
-  memoized_lookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)
+  memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)
 }

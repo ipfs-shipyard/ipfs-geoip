@@ -85,7 +85,7 @@ function parseBlocks (blocks, locations) {
     comment: '#'
   })
     .then((parsed) => {
-      var last_end = 0
+      var lastEnd = 0
 
       return _.reduce(parsed, (acc, row) => {
         var start = row.startIpNum
@@ -93,9 +93,9 @@ function parseBlocks (blocks, locations) {
         var locid = row.locId
 
         // unmapped range?
-        if ((start - last_end) > 1) {
+        if ((start - lastEnd) > 1) {
           acc.push({
-            min: last_end + 1,
+            min: lastEnd + 1,
             data: 0
           })
         }
@@ -105,7 +105,7 @@ function parseBlocks (blocks, locations) {
           data: locations[locid]
         })
 
-        last_end = end
+        lastEnd = end
 
         return acc
       }, [])

@@ -3,7 +3,7 @@
 
 const expect = require('chai').expect
 
-const format = require('../lib/format.js')
+const format = require('../src/format')
 
 describe('format', () => {
   it('formats with all details present', () => {
