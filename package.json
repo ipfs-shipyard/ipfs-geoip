@@ -7,19 +7,17 @@
   "scripts": {
     "lint": "aegir-lint",
     "build": "aegir-build",
-    "test": "aegir-test",
-    "test:node": "aegir-test --env node",
-    "test:browser": "aegir-test --env browser",
-    "release": "aegir-release",
-    "release-minor": "aegir-release --type minor",
-    "release-major": "aegir-release --type major",
+    "test": "aegir-test --env node",
+    "release": "aegir-release --evn node",
+    "release-minor": "aegir-release --type minor --env node",
+    "release-major": "aegir-release --type major --env node",
     "coverage": "aegir-coverage",
     "coverage-publish": "aegir-coverage publish",
     "generate": "bin/generate"
   },
   "dependencies": {
     "inet_ipv4": "^1.0.0",
-    "memoizee": "^0.3.10",
+    "memoizee": "^0.4.1",
     "multihashes": "^0.2.2"
   },
   "repository": {
@@ -27,17 +25,17 @@
     "url": "https://github.com/ipfs/ipfs-geoip"
   },
   "devDependencies": {
-    "aegir": "^3.2.0",
+    "aegir": "^8.1.2",
     "bl": "^1.1.2",
-    "bluebird": "^3.4.0",
+    "bluebird": "^3.4.6",
     "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "chai-as-promised": "^6.0.0",
     "csv": "^1.1.0",
-    "gauge": "^2.4.0",
+    "gauge": "^2.6.0",
     "iconv-lite": "^0.4.13",
-    "ipfs-api": "^4.1.0",
-    "ipfsd-ctl": "^0.14.0",
-    "lodash": "^4.13.1",
+    "ipfs-api": "^9.0.0",
+    "ipfsd-ctl": "^0.16.0",
+    "lodash": "^4.16.4",
     "pre-commit": "^1.1.3"
   },
   "keywords": [
