@@ -1,6 +1,6 @@
 {
   "name": "ipfs-geoip",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Library for ipfs geoip lookups",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
