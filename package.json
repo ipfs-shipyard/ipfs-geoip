@@ -33,7 +33,7 @@
     "csv": "^1.1.0",
     "gauge": "^2.6.0",
     "iconv-lite": "^0.4.13",
-    "ipfs-api": "^9.0.0",
+    "ipfs-api": "^12.1.0",
     "ipfsd-ctl": "^0.16.0",
     "lodash": "^4.16.4",
     "pre-commit": "^1.1.3"
