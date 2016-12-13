@@ -25,7 +25,7 @@
     "url": "https://github.com/ipfs/ipfs-geoip"
   },
   "devDependencies": {
-    "aegir": "^8.1.2",
+    "aegir": "^9.3.0",
     "bl": "^1.1.2",
     "bluebird": "^3.4.6",
     "chai": "^3.5.0",
