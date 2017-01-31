@@ -30,11 +30,11 @@ function _lookup (ipfs, hash, lookfor, cb) {
 
       const next = res.links[child - 1]
 
-      if (!next || !next.hash) {
+      if (!next || !next.multihash) {
         return cb(new Error('Failed to lookup node'))
       }
 
-      return memoizedLookup(ipfs, next.hash, lookfor, cb)
+      return memoizedLookup(ipfs, next.multihash, lookfor, cb)
     } else if (obj.type === 'Leaf') {
       while (obj.data[child] && obj.data[child].min <= lookfor) {
         child++
