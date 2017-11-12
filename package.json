@@ -4,36 +4,36 @@
   "description": "Library for ipfs geoip lookups",
   "main": "src/index.js",
   "scripts": {
-    "lint": "aegir-lint",
-    "build": "aegir-build",
-    "test": "aegir-test --env node",
-    "release": "aegir-release --evn node",
-    "release-minor": "aegir-release --type minor --env node",
-    "release-major": "aegir-release --type major --env node",
-    "coverage": "aegir-coverage",
-    "coverage-publish": "aegir-coverage publish",
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "test": "aegir test -t node",
+    "release": "aegir release -t node",
+    "release-minor": "aegir release --type minor -t node",
+    "release-major": "aegir release --type major -t node",
+    "coverage": "aegir coverage",
+    "coverage-publish": "aegir-coverage --provider coveralls",
     "generate": "bin/generate"
   },
   "dependencies": {
     "inet_ipv4": "^1.0.0",
-    "memoizee": "^0.4.1",
-    "multihashes": "^0.3.2"
+    "memoizee": "~0.4.11",
+    "multihashes": "^0.4.12"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/ipfs-geoip"
   },
   "devDependencies": {
-    "aegir": "^9.4.0",
-    "bl": "^1.2.0",
-    "bluebird": "^3.4.7",
-    "chai": "^3.5.0",
-    "chai-as-promised": "^6.0.0",
-    "csv": "^1.1.1",
-    "gauge": "^2.7.2",
-    "iconv-lite": "^0.4.15",
-    "ipfs-api": "^12.1.4",
-    "ipfsd-ctl": "^0.18.1",
+    "aegir": "^12.1.3",
+    "bl": "^1.2.1",
+    "bluebird": "^3.5.1",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "csv": "^2.0.0",
+    "gauge": "^2.7.4",
+    "iconv-lite": "~0.4.19",
+    "ipfs-api": "^15.0.1",
+    "ipfsd-ctl": "~0.24.1",
     "lodash": "^4.17.4",
     "pre-commit": "^1.2.2"
   },
@@ -54,7 +54,7 @@
     "lint"
   ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",

@@ -136,7 +136,7 @@ function putObject (data, min, api) {
 
 // Create a btree leaf with data
 function createLeaf (data) {
-  return new Buffer(JSON.stringify({
+  return Buffer.from(JSON.stringify({
     Data: JSON.stringify({
       type: 'Leaf',
       data: data
@@ -145,7 +145,7 @@ function createLeaf (data) {
 }
 // Create a btree node with data
 function createNode (data) {
-  return new Buffer(JSON.stringify({
+  return Buffer.from(JSON.stringify({
     Data: JSON.stringify({
       type: 'Node',
       mins: data.map((x) => x.min)

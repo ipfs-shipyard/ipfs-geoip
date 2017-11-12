@@ -8,7 +8,7 @@ const expect = chai.expect
 
 const gen = require('../src/generate/')
 
-const countries = new Buffer(`
+const countries = Buffer.from(`
 name,alpha2,countryCallingCodes,alpha3,ioc,currencies,languages,ccTLD,status
 Ascension Island,AC,+247,,SHP,USD,eng,.ac,reserved
 Andorra,AD,+376,AND,AND,EUR,cat,,assigned
@@ -17,7 +17,7 @@ Afghanistan,AF,+93,AFG,AFG,AFN,pus,,assigned
 Antigua And Barbuda,AG,+1 268,ATG,ANT,XCD,eng,,assigned
 `)
 
-const locations = new Buffer(`
+const locations = Buffer.from(`
 # Copyright (c) 2012 MaxMind LLC.  All Rights Reserved.
 locId,country,region,city,postalCode,latitude,longitude,metroCode,areaCode
 1,"AD","","","",42.5000,1.5000,,
@@ -26,7 +26,7 @@ locId,country,region,city,postalCode,latitude,longitude,metroCode,areaCode
 4,"AG","","","",17.0500,-61.8000,,
 `)
 
-const blocks = new Buffer(`
+const blocks = Buffer.from(`
 # Copyright (c) 2011 MaxMind Inc.  All Rights Reserved.
 startIpNum,endIpNum,locId
 "16777216","16777471","1"
