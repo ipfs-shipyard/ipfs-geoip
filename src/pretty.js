@@ -13,7 +13,7 @@ function isLocal (address) {
 
 module.exports = function lookupPretty (ipfs, multiaddrs, cb) {
   if (multiaddrs.length === 0) {
-    return cb(new Error('Unmapped range'), null)
+    return cb(new Error('lookup requires a multiaddr array with length > 0'), null)
   }
 
   if (typeof multiaddrs === 'string') {
@@ -29,9 +29,7 @@ module.exports = function lookupPretty (ipfs, multiaddrs, cb) {
   }
 
   lookup(ipfs, address, (err, res) => {
-    if (err) {
-      return cb(err)
-    }
+    if (err) { return cb(err) }
 
     if (!res.country_name && multiaddrs.length > 1) {
       return lookupPretty(ipfs, multiaddrs.slice(1), cb)
