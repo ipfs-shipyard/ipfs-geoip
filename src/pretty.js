@@ -12,6 +12,7 @@ function isLocal (address) {
 }
 
 module.exports = function lookupPretty (ipfs, multiaddrs, cb) {
+  console.log('lookupPretty', multiaddrs.length, multiaddrs)
   if (multiaddrs.length === 0) {
     return cb(new Error('lookup requires a multiaddr array with length > 0'), null)
   }
@@ -25,7 +26,11 @@ module.exports = function lookupPretty (ipfs, multiaddrs, cb) {
 
   // No ip6 support at the moment
   if (isLocal(address) || current[1] === 'ip6') {
-    return lookupPretty(ipfs, multiaddrs.slice(1), cb)
+    const next = multiaddrs.slice(1)
+    if (next.length > 0 ) {
+      return lookupPretty(ipfs, multiaddrs.slice(1), cb)
+    }
+    return cb(new Error('Unmapped range'), null)
   }
 
   lookup(ipfs, address, (err, res) => {
