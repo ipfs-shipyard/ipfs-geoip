@@ -1,6 +1,6 @@
 {
   "name": "ipfs-geoip",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Library for ipfs geoip lookups",
   "main": "src/index.js",
   "scripts": {
@@ -60,6 +60,7 @@
     "David Dias <daviddias.p@gmail.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
     "Kristoffer Ström <kristoffer@rymdkoloni.se>",
+    "Oli Evans <oli@tableflip.io>",
     "Richard Littauer <richard.littauer@gmail.com>"
   ]
 }
