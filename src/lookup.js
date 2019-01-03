@@ -61,7 +61,7 @@ function _lookup (ipfs, hash, lookfor, cb) {
   })
 }
 
-memoizedLookup = memoize(_lookup, {async: true})
+memoizedLookup = memoize(_lookup, { async: true })
 
 module.exports = function lookup (ipfs, ip, cb) {
   memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)

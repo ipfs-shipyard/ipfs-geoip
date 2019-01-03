@@ -26,7 +26,7 @@ module.exports = function lookupPretty (ipfs, multiaddrs, cb) {
   // No ip6 support at the moment
   if (isLocal(address) || current[1] === 'ip6') {
     const next = multiaddrs.slice(1)
-    if (next.length > 0 ) {
+    if (next.length > 0) {
       return lookupPretty(ipfs, multiaddrs.slice(1), cb)
     }
     return cb(new Error('Unmapped range'), null)

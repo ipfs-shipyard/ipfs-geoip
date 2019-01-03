@@ -213,7 +213,7 @@ function main (ipfs) {
     .then((result) => {
       emit('node', 'end')
       emit('pinning', 'start')
-      return ipfs.pin.add(result.hash, {recursive: true})
+      return ipfs.pin.add(result.hash, { recursive: true })
     })
     .then((result) => {
       emit('pinning', 'end')

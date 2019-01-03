@@ -94,8 +94,8 @@ describe('generate', () => {
   it('putObject', () => {
     const api = {
       object: {
-        put: () => Promise.resolve({Hash: 'myhash'}),
-        stat: (hash) => Promise.resolve({CumulativeSize: 5})
+        put: () => Promise.resolve({ Hash: 'myhash' }),
+        stat: (hash) => Promise.resolve({ CumulativeSize: 5 })
       }
     }
 
@@ -111,8 +111,8 @@ describe('generate', () => {
   it('toNode', () => {
     const api = {
       object: {
-        put: (val) => Promise.resolve({Hash: 'myhash' + val.length}),
-        stat: (hash) => Promise.resolve({CumulativeSize: hash.length})
+        put: (val) => Promise.resolve({ Hash: 'myhash' + val.length }),
+        stat: (hash) => Promise.resolve({ CumulativeSize: hash.length })
       }
     }
 
