@@ -17,7 +17,7 @@
   "dependencies": {
     "inet_ipv4": "^1.0.0",
     "memoizee": "~0.4.11",
-    "multihashes": "^0.4.12"
+    "multihashes": "~0.4.12"
   },
   "repository": {
     "type": "git",
@@ -32,8 +32,8 @@
     "csv": "^2.0.0",
     "gauge": "^2.7.4",
     "iconv-lite": "~0.4.19",
-    "ipfs": "^0.33.1",
-    "ipfsd-ctl": "^0.40.2",
+    "ipfs": "~0.33.1",
+    "ipfsd-ctl": "~0.40.2",
     "lodash": "^4.17.4",
     "pre-commit": "^1.2.2"
   },
