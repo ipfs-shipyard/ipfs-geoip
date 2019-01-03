@@ -30,11 +30,17 @@ function _lookup (ipfs, hash, lookfor, cb) {
 
       const next = res.links[child - 1]
 
-      if (!next || !next.multihash) {
+      if (!next) {
         return cb(new Error('Failed to lookup node'))
       }
 
-      return memoizedLookup(ipfs, next.multihash, lookfor, cb)
+      const nextCid = getCid(next)
+
+      if (!nextCid) {
+        return cb(new Error('Failed to lookup node'))
+      }
+
+      return memoizedLookup(ipfs, nextCid, lookfor, cb)
     } else if (obj.type === 'Leaf') {
       while (obj.data[child] && obj.data[child].min <= lookfor) {
         child++
@@ -59,4 +65,13 @@ memoizedLookup = memoize(_lookup, {async: true})
 
 module.exports = function lookup (ipfs, ip, cb) {
   memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)
+}
+
+function getCid (node) {
+  if (!node) return null
+  // Handle ipfs-api < 27.0.0
+  if (node.multihash) return node.multihash
+  // Handle ipfs-http-client >= 27.0.0
+  if (node.cid) return node.cid.toString()
+  return null
 }
