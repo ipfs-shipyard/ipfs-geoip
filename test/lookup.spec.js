@@ -2,24 +2,19 @@
 'use strict'
 
 const expect = require('chai').expect
-
 const geoip = require('../src')
-const IPFS = require('ipfs-api')
-const ctl = require('ipfsd-ctl')
+const IPFSFactory = require('ipfsd-ctl')
+const factory = IPFSFactory.create({ type: 'js' })
 
 describe('lookup', function () {
   this.timeout(100 * 1000)
   let ipfs
 
   before((done) => {
-    ctl.disposable((err, node) => {
+    factory.spawn((err, ipfsd) => {
       if (err) throw err
-
-      node.startDaemon((err) => {
-        if (err) throw err
-        ipfs = IPFS(node.apiAddr)
-        done()
-      })
+      ipfs = ipfsd.api
+      done()
     })
   })
 

@@ -12,7 +12,6 @@ function isLocal (address) {
 }
 
 module.exports = function lookupPretty (ipfs, multiaddrs, cb) {
-  console.log('lookupPretty', multiaddrs.length, multiaddrs)
   if (multiaddrs.length === 0) {
     return cb(new Error('lookup requires a multiaddr array with length > 0'), null)
   }
