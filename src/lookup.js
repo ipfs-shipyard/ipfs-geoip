@@ -10,6 +10,12 @@ const GEOIP_ROOT = mh.fromB58String('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbe
 
 let memoizedLookup
 
+/**
+ * @param {Object} ipfs
+ * @param {string} hash
+ * @param {string} lookfor - ip
+ * @returns {Promise}
+ */
 function _lookup (ipfs, hash, lookfor) {
   return new Promise((resolve, reject) => {
     ipfs.object.get(hash, (err, res) => {
@@ -65,6 +71,11 @@ function _lookup (ipfs, hash, lookfor) {
 
 memoizedLookup = memoize(_lookup, { async: true })
 
+/**
+ * @param {Object} ipfs
+ * @param {string} ip
+ * @returns {Promise}
+ */
 module.exports = function lookup (ipfs, ip) {
   return memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip))
 }
