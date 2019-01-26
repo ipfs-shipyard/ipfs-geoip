@@ -10,61 +10,63 @@ const GEOIP_ROOT = mh.fromB58String('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbe
 
 let memoizedLookup
 
-function _lookup (ipfs, hash, lookfor, cb) {
-  ipfs.object.get(hash, (err, res) => {
-    if (err) return cb(err)
+function _lookup (ipfs, hash, lookfor) {
+  return new Promise((resolve, reject) => {
+    ipfs.object.get(hash, (err, res) => {
+      if (err) reject(err)
 
-    let obj
-    try {
-      obj = JSON.parse(res.data)
-    } catch (err) {
-      return cb(err)
-    }
-
-    let child = 0
-
-    if (obj.type === 'Node') {
-      while (obj.mins[child] && obj.mins[child] <= lookfor) {
-        child++
+      let obj
+      try {
+        obj = JSON.parse(res.data)
+      } catch (err) {
+        reject(err)
       }
 
-      const next = res.links[child - 1]
+      let child = 0
 
-      if (!next) {
-        return cb(new Error('Failed to lookup node'))
+      if (obj.type === 'Node') {
+        while (obj.mins[child] && obj.mins[child] <= lookfor) {
+          child++
+        }
+
+        const next = res.links[child - 1]
+
+        if (!next) {
+          reject(new Error('Failed to lookup node'))
+        }
+
+        const nextCid = getCid(next)
+
+        if (!nextCid) {
+          reject(new Error('Failed to lookup node'))
+        }
+
+        resolve(memoizedLookup(ipfs, nextCid, lookfor))
+      } else if (obj.type === 'Leaf') {
+        while (obj.data[child] && obj.data[child].min <= lookfor) {
+          child++
+        }
+
+        const next = obj.data[child - 1]
+
+        if (!next) {
+          reject(new Error('Failed to lookup leaf node'))
+        }
+
+        if (!next.data) {
+          reject(new Error('Unmapped range'), null)
+        }
+
+        resolve(formatData(next.data))
       }
-
-      const nextCid = getCid(next)
-
-      if (!nextCid) {
-        return cb(new Error('Failed to lookup node'))
-      }
-
-      return memoizedLookup(ipfs, nextCid, lookfor, cb)
-    } else if (obj.type === 'Leaf') {
-      while (obj.data[child] && obj.data[child].min <= lookfor) {
-        child++
-      }
-
-      const next = obj.data[child - 1]
-
-      if (!next) {
-        return cb(new Error('Failed to lookup leaf node'))
-      }
-
-      if (!next.data) {
-        return cb(new Error('Unmapped range'), null)
-      }
-
-      return cb(null, formatData(next.data))
-    }
+    })
   })
 }
 
 memoizedLookup = memoize(_lookup, { async: true })
 
-module.exports = function lookup (ipfs, ip, cb) {
-  memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip), cb)
+module.exports = function lookup (ipfs, ip) {
+  return memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip))
 }
 
 function getCid (node) {
