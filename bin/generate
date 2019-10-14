@@ -3,7 +3,7 @@
 
 const Gauge = require('gauge')
 const gen = require('../src/generate')
-const API = require('ipfs-api')
+const ipfs = require('ipfs-http-client')()
 
 function handleNoApi () {
   console.error('No ipfs daemon running. Please start one')
@@ -11,9 +11,6 @@ function handleNoApi () {
 }
 
 // -- CLI interaction
-
-const ipfs = new API()
-
 ipfs.id()
   .then((id) => {
     if (!id) handleNoApi()

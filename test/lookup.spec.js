@@ -18,51 +18,46 @@ describe('lookup', function () {
     })
   })
 
-  it('fails on 127.0.0.1', (done) => {
-    geoip.lookup(ipfs, '127.0.0.1', function (err, result) {
+  it('fails on 127.0.0.1', async () => {
+    try {
+      await geoip.lookup(ipfs, '127.0.0.1')
+    } catch (err) {
       expect(err).to.have.property('message', 'Unmapped range')
-      done()
-    })
+    }
   })
 
-  it('looks up 8.8.8.8', (done) => {
-    geoip.lookup(ipfs, '8.8.8.8', function (err, result) {
-      if (err) throw err
-      expect(
-        result
-      ).to.be.eql({
-        country_name: 'United States',
-        country_code: 'US',
-        region_code: 'CA',
-        city: 'Mountain View',
-        postal_code: 94040,
-        latitude: 37.386,
-        longitude: -122.0838,
-        metro_code: 807,
-        area_code: 650,
-        planet: 'Earth'
-      })
-
-      done()
+  it('looks up 8.8.8.8', async () => {
+    const result = await geoip.lookup(ipfs, '8.8.8.8')
+    expect(
+      result
+    ).to.be.eql({
+      country_name: 'United States',
+      country_code: 'US',
+      region_code: 'CA',
+      city: 'Mountain View',
+      postal_code: 94040,
+      latitude: 37.386,
+      longitude: -122.0838,
+      metro_code: 807,
+      area_code: 650,
+      planet: 'Earth'
     })
   })
 
   describe('lookupPretty', () => {
-    it('fails on 127.0.0.1', (done) => {
-      geoip.lookupPretty(ipfs, '/ip4/127.0.0.1', function (err, result) {
+    it('fails on 127.0.0.1', async () => {
+      try {
+        await geoip.lookupPretty(ipfs, '/ip4/127.0.0.1')
+      } catch (err) {
         expect(err).to.have.property('message', 'Unmapped range')
-        done()
-      })
+      }
     })
 
-    it('looks up 8.8.8.8', (done) => {
-      geoip.lookupPretty(ipfs, '/ip4/8.8.8.8', function (err, result) {
-        if (err) throw err
-        expect(
-          result.formatted
-        ).to.be.eql('Mountain View, CA, United States, Earth')
-        done()
-      })
+    it('looks up 8.8.8.8', async () => {
+      const result = await geoip.lookupPretty(ipfs, '/ip4/8.8.8.8')
+      expect(
+        result.formatted
+      ).to.be.eql('Mountain View, CA, United States, Earth')
     })
   })
 })
