@@ -15,26 +15,26 @@
     "generate": "bin/generate"
   },
   "dependencies": {
-    "inet_ipv4": "^1.0.0",
-    "memoizee": "~0.4.11",
-    "multihashes": "~0.4.12"
+    "inet_ipv4": "^1.0.1",
+    "memoizee": "~0.4.14",
+    "multihashes": "~0.4.15"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs/ipfs-geoip"
   },
   "devDependencies": {
-    "aegir": "^18.0.2",
-    "bl": "^1.2.1",
-    "bluebird": "^3.5.1",
-    "chai": "^4.1.2",
+    "aegir": "^20.4.1",
+    "bl": "^4.0.0",
+    "bluebird": "^3.7.1",
+    "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "csv": "^2.0.0",
+    "csv": "^5.1.3",
     "gauge": "^2.7.4",
-    "iconv-lite": "~0.4.19",
-    "ipfs": "~0.33.1",
-    "ipfsd-ctl": "~0.40.2",
-    "lodash": "^4.17.4",
+    "iconv-lite": "~0.5.0",
+    "ipfs": "~0.39.0",
+    "ipfsd-ctl": "~0.47.4",
+    "lodash": "^4.17.15",
     "pre-commit": "^1.2.2"
   },
   "keywords": [

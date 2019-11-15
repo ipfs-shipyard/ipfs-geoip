@@ -11,47 +11,41 @@ function isLocal (address) {
   return false
 }
 
-module.exports = function lookupPretty (ipfs, multiaddrs) {
-  return new Promise(async (resolve, reject) => {
-    if (multiaddrs.length === 0) {
-      reject(new Error('lookup requires a multiaddr array with length > 0'), null)
+module.exports = async function lookupPretty (ipfs, multiaddrs) {
+  if (multiaddrs.length === 0) {
+    throw new Error('lookup requires a multiaddr array with length > 0')
+  }
+
+  if (typeof multiaddrs === 'string') {
+    multiaddrs = [multiaddrs]
+  }
+
+  const current = multiaddrs[0].split('/')
+  const address = current[2]
+
+  // No ip6 support at the moment
+  if (isLocal(address) || current[1] === 'ip6') {
+    const next = multiaddrs.slice(1)
+    if (next.length > 0) {
+      return lookupPretty(ipfs, multiaddrs.slice(1))
     }
+    throw new Error('Unmapped range')
+  }
 
-    if (typeof multiaddrs === 'string') {
-      multiaddrs = [multiaddrs]
-    }
+  const res = await lookup(ipfs, address)
 
-    const current = multiaddrs[0].split('/')
-    const address = current[2]
+  if (!res.country_name && multiaddrs.length > 1) {
+    return lookupPretty(ipfs, multiaddrs.slice(1))
+  }
 
-    // No ip6 support at the moment
-    if (isLocal(address) || current[1] === 'ip6') {
-      const next = multiaddrs.slice(1)
-      if (next.length > 0) {
-        resolve(lookupPretty(ipfs, multiaddrs.slice(1)))
-      }
-      reject(new Error('Unmapped range'))
-    }
+  const location = []
 
-    try {
-      const res = await lookup(ipfs, address)
+  if (res.planet) location.push(res.planet)
+  if (res.country_name) location.unshift(res.country_name)
+  if (res.region_code) location.unshift(res.region_code)
+  if (res.city) location.unshift(res.city)
 
-      if (!res.country_name && multiaddrs.length > 1) {
-        resolve(lookupPretty(ipfs, multiaddrs.slice(1)))
-      }
+  res.formatted = location.join(', ')
 
-      const location = []
-
-      if (res.planet) location.push(res.planet)
-      if (res.country_name) location.unshift(res.country_name)
-      if (res.region_code) location.unshift(res.region_code)
-      if (res.city) location.unshift(res.city)
-
-      res.formatted = location.join(', ')
-
-      resolve(res)
-    } catch (err) {
-      reject(err)
-    }
-  })
+  return res
 }

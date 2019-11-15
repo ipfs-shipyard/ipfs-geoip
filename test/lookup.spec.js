@@ -10,12 +10,9 @@ describe('lookup', function () {
   this.timeout(100 * 1000)
   let ipfs
 
-  before((done) => {
-    factory.spawn((err, ipfsd) => {
-      if (err) throw err
-      ipfs = ipfsd.api
-      done()
-    })
+  before(async () => {
+    const ipfsd = await factory.spawn()
+    ipfs = ipfsd.api
   })
 
   it('fails on 127.0.0.1', async () => {
