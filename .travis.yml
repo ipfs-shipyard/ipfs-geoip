@@ -1,26 +1,53 @@
-sudo: false
 language: node_js
+cache: npm
+stages:
+  - check
+  - test
+  - cov
+
 node_js:
-  - stable
+  - '12'
+  - '10'
 
-services:
-  - xvfb
+os:
+  - linux
+  - osx
+  - windows
 
-script:
-  - npm run lint
-  - npm test
-  - npm run coverage
+script: npx nyc -s npm run test:node -- --bail
+after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
-after_success:
-  - npm run coverage-publish
+jobs:
+  include:
+    - stage: check
+      script:
+        - npx aegir commitlint --travis
+        - npx aegir dep-check
+        - npm run lint
 
-env:
-  - CXX=g++-4.8
+    - stage: test
+      name: chrome
+      addons:
+        chrome: stable
+      script: npx aegir test -t browser -t webworker
 
-addons:
-  firefox: 'latest'
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
+    - stage: test
+      name: firefox
+      addons:
+        firefox: latest
+      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
+
+    - stage: test
+      name: electron-main
+      os: osx
+      script:
+        - npx aegir test -t electron-main --bail
+
+    - stage: test
+      name: electron-renderer
+      os: osx
+      script:
+        - npx aegir test -t electron-renderer --bail
+
+notifications:
+  email: false
