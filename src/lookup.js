@@ -56,7 +56,7 @@ async function _lookup (ipfs, hash, lookfor) {
   }
 }
 
-const memoizedLookup = memoize(_lookup, { async: true })
+const memoizedLookup = memoize(_lookup, { promise: true })
 
 /**
  * @param {Object} ipfs
