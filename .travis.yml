@@ -14,7 +14,7 @@ os:
   - osx
   - windows
 
-script: npx nyc -s npm run test:node -- --bail
+script: npx nyc -s npm run test:node -- --bail --timeout 10000
 after_success: npx nyc report --reporter=text-lcov > coverage.lcov && npx codecov
 
 jobs:
@@ -29,25 +29,25 @@ jobs:
       name: chrome
       addons:
         chrome: stable
-      script: npx aegir test -t browser -t webworker
+      script: npx aegir test -t browser -t webworker --timeout 10000
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
+      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless --timeout 10000
 
     - stage: test
       name: electron-main
       os: osx
       script:
-        - npx aegir test -t electron-main --bail
+        - npx aegir test -t electron-main --bail --timeout 10000
 
     - stage: test
       name: electron-renderer
       os: osx
       script:
-        - npx aegir test -t electron-renderer --bail
+        - npx aegir test -t electron-renderer --bail --timeout 10000
 
 notifications:
   email: false
