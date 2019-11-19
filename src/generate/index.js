@@ -62,8 +62,8 @@ function parseLocations (locations, countries) {
           row.region,
           row.city,
           row.postalCode,
-          row.latitude,
-          row.longitude,
+          Number(row.latitude),
+          Number(row.longitude),
           row.metroCode,
           row.areaCode
         ]
@@ -88,8 +88,8 @@ function parseBlocks (blocks, locations) {
       var lastEnd = 0
 
       return _.reduce(parsed, (acc, row) => {
-        var start = row.startIpNum
-        var end = row.endIpNum
+        var start = Number(row.startIpNum)
+        var end = Number(row.endIpNum)
         var locid = row.locId
 
         // unmapped range?

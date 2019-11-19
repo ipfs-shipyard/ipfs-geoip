@@ -78,16 +78,16 @@ describe('generate', () => {
       data: 0
     }, {
       min: 16777216,
-      data: [ 'Andorra', 'AD', '', '', '', 42.5, 1.5, '', '' ]
+      data: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', '']
     }, {
       min: 16777472,
-      data: [ 'United Arab Emirates', 'AE', '', '', '', 24, 54, '', '' ]
+      data: ['United Arab Emirates', 'AE', '', '', '', 24, 54, '', '']
     }, {
       min: 16778240,
-      data: [ 'Afghanistan', 'AF', '', '', '', 33, 65, '', '' ]
+      data: ['Afghanistan', 'AF', '', '', '', 33, 65, '', '']
     }, {
       min: 16779264,
-      data: [ 'Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '' ]
+      data: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
     }])
   })
 
@@ -122,7 +122,7 @@ describe('generate', () => {
         data: 0
       }, {
         min: 16777216,
-        data: [ 'Andorra', 'AD', '', '', '', 42.5, 1.5, '', '' ]
+        data: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', '']
       }], api)
     ).to.eventually.be.eql({
       min: 1,
