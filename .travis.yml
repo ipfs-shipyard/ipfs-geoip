@@ -35,7 +35,7 @@ jobs:
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless --timeout 10000
+      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
