@@ -4,7 +4,7 @@
 const expect = require('chai').expect
 const geoip = require('../src')
 const IPFSFactory = require('ipfsd-ctl')
-const factory = IPFSFactory.create({ type: 'js' })
+const factory = IPFSFactory.create({ type: 'proc', exec: require('ipfs') })
 
 describe('lookup', function () {
   this.timeout(100 * 1000)
