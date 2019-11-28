@@ -24,21 +24,19 @@ const ipfs = require('ipfs-http-client')()
 
 var exampleIp = '89.114.95.36'
 
-geoip.lookup(ipfs, exampleIp, (err, result) => {
-  if (err) {
-    console.log('Error: ' + err)
-  } else {
-    console.log('Result: ' + JSON.stringify(result, null, 2))
-  }
-})
+try {
+  const result = await geoip.lookup(ipfs, exampleIp)
+  console.log('Result: ' + JSON.stringify(result, null, 2))
+} catch (err) {
+  console.log('Error: ' + err)
+}
 
-geoip.lookupPretty(ipfs, '/ip4/' + exampleIp, (err, result) => {
-  if (err) {
-    console.log('Error: ' + err)
-  } else {
-    console.log('Pretty result: %s', result.formatted)
-  }
-})
+try {
+  const result = await geoip.lookupPretty(ipfs, '/ip4/' + exampleIp)
+  console.log('Pretty result: %s', result.formatted)
+} catch (err) {
+  console.log('Error: ' + err)
+}
 ```
 
 ## API
