@@ -43,7 +43,7 @@ try {
 
 ### `lookup(ipfs, ip, callback)`
 
-Returns an object of the form
+Returns a promise that resolves to an object of the form
 
 ```js
 {
