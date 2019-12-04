@@ -26,7 +26,7 @@ var exampleIp = '89.114.95.36'
 
 try {
   const result = await geoip.lookup(ipfs, exampleIp)
-  console.log('Result: ' + JSON.stringify(result, null, 2))
+  console.log('Result: ', result)
 } catch (err) {
   console.log('Error: ' + err)
 }
