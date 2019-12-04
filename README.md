@@ -22,7 +22,7 @@ npm install --save ipfs-geoip
 const geoip = require('ipfs-geoip')
 const ipfs = require('ipfs-http-client')()
 
-var exampleIp = '89.114.95.36'
+const exampleIp = '89.114.95.36'
 
 try {
   const result = await geoip.lookup(ipfs, exampleIp)
