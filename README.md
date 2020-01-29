@@ -41,7 +41,7 @@ try {
 
 ## API
 
-### `lookup(ipfs, ip, callback)`
+### `lookup(ipfs, ip)`
 
 Returns a promise that resolves to an object of the form
 
@@ -60,7 +60,7 @@ Returns a promise that resolves to an object of the form
 }
 ```
 
-### `lookupPretty(ipfs, multiaddrs, callback)`
+### `lookupPretty(ipfs, multiaddrs)`
 
 Provides the same results as `lookup` with the addition of
 a `formatted` property that looks like this: `Mountain View, CA, United States, Earth`.
