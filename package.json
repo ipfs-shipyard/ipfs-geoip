@@ -2,7 +2,25 @@
   "name": "ipfs-geoip",
   "version": "3.0.0",
   "description": "Library for ipfs geoip lookups",
+  "keywords": [
+    "ipfs",
+    "geoip"
+  ],
+  "homepage": "https://github.com/ipfs/ipfs-geoip",
+  "bugs": {
+    "url": "https://github.com/ipfs/ipfs-geoip/issues"
+  },
+  "license": "MIT",
+  "author": "Kristoffer Ström <kristoffer@rymdkoloni.se>",
+  "files": [
+    "src",
+    "dist"
+  ],
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ipfs/ipfs-geoip"
+  },
   "scripts": {
     "lint": "aegir lint",
     "release": "aegir release",
@@ -17,12 +35,8 @@
     "memoizee": "~0.4.14",
     "multihashes": "~0.4.15"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ipfs/ipfs-geoip"
-  },
   "devDependencies": {
-    "aegir": "^20.4.1",
+    "aegir": "^22.0.0",
     "bl": "^4.0.0",
     "bluebird": "^3.7.1",
     "chai": "^4.2.0",
@@ -35,25 +49,16 @@
     "lodash": "^4.17.15",
     "pre-commit": "^1.2.2"
   },
-  "keywords": [
-    "ipfs",
-    "geoip"
-  ],
-  "author": "Kristoffer Ström <kristoffer@rymdkoloni.se>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ipfs/ipfs-geoip/issues"
-  },
-  "homepage": "https://github.com/ipfs/ipfs-geoip",
   "directories": {
     "example": "example"
+  },
+  "engines": {
+    "node": ">=10.0.0",
+    "npm": ">=6.0.0"
   },
   "pre-commit": [
     "lint"
   ],
-  "engines": {
-    "node": ">=6.0.0"
-  },
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",

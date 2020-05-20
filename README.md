@@ -12,9 +12,24 @@
 
 ## Install
 
+### NPM
+
+
 ```js
 npm install --save ipfs-geoip
 ```
+
+### CDN
+
+Instead of a local installation (and browserification) you may request a [remote copy from jsDelivr](https://www.jsdelivr.com/package/npm/ipfs-geoip):
+
+```html
+<!-- loading the minified version using jsDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@4.0.0/dist/index.min.js"></script>
+```
+
+When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
+
 
 ## Usage
 
