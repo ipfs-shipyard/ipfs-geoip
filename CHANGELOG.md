@@ -1,3 +1,8 @@
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/ipfs/ipfs-geoip/compare/v4.0.0...v4.1.0) (2020-05-26)
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/ipfs/ipfs-geoip/compare/v3.0.0...v4.0.0) (2020-05-26)
 
