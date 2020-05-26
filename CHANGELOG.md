@@ -1,3 +1,13 @@
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/ipfs/ipfs-geoip/compare/v3.0.0...v4.0.0) (2020-05-26)
+
+
+### Features
+
+* prebuilt browser bundle ([#74](https://github.com/ipfs/ipfs-geoip/issues/74)) ([05ebf61](https://github.com/ipfs/ipfs-geoip/commit/05ebf61))
+
+
+
 <a name="3.0.0"></a>
 # [3.0.0](https://github.com/ipfs/ipfs-geoip/compare/v2.3.0...v3.0.0) (2019-01-03)
 
