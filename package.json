@@ -6,9 +6,9 @@
     "ipfs",
     "geoip"
   ],
-  "homepage": "https://github.com/ipfs/ipfs-geoip",
+  "homepage": "https://github.com/ipfs-shipyard/ipfs-geoip",
   "bugs": {
-    "url": "https://github.com/ipfs/ipfs-geoip/issues"
+    "url": "https://github.com/ipfs-shipyard/ipfs-geoip/issues"
   },
   "license": "MIT",
   "author": "Kristoffer Ström <kristoffer@rymdkoloni.se>",
@@ -19,7 +19,7 @@
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ipfs/ipfs-geoip"
+    "url": "https://github.com/ipfs-shipyard/ipfs-geoip"
   },
   "scripts": {
     "lint": "aegir lint",
