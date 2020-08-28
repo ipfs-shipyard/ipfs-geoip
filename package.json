@@ -32,19 +32,20 @@
   },
   "dependencies": {
     "inet_ipv4": "^1.0.1",
+    "it-concat": "^1.0.0",
     "memoizee": "~0.4.14",
     "multihashes": "~0.4.15"
   },
   "devDependencies": {
     "aegir": "^22.0.0",
-    "bl": "^4.0.0",
     "bluebird": "^3.7.1",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "csv": "^5.1.3",
-    "gauge": "^2.7.4",
-    "iconv-lite": "~0.5.0",
+    "csv": "^5.3.2",
+    "gauge": "^3.0.0",
+    "iconv-lite": "~0.6.2",
     "ipfs": "~0.49.1",
+    "ipfs-http-client": "^46.0.1",
     "ipfsd-ctl": "^7.0.0",
     "lodash": "^4.17.15",
     "pre-commit": "^1.2.2"

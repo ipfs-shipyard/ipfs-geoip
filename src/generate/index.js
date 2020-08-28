@@ -5,7 +5,7 @@ const csv = Promise.promisifyAll(require('csv'))
 const iconv = require('iconv-lite')
 const _ = require('lodash')
 const EventEmitter = require('events').EventEmitter
-const bl = require('bl')
+const concat = require('it-concat')
 
 // Btree size
 const CHILDREN = 32
@@ -117,18 +117,18 @@ function parseBlocks (blocks, locations) {
 }
 
 function putObject (data, min, api) {
-  return api.object.put(data, 'json')
-    .then((put) => {
-      return api.object.stat(put.Hash)
+  return api.object.put(data, { enc: 'json' })
+    .then((cid) => {
+      return api.object.stat(cid)
         .then((stat) => {
           if (!stat) {
-            throw new Error(`Could not stat object ${put.Hash}`)
+            throw new Error(`Could not stat object ${cid.toString()}`)
           }
           emit('put', 'end')
           return {
             min: min,
             size: stat.CumulativeSize,
-            hash: put.Hash
+            hash: stat.Hash
           }
         })
     })
@@ -179,15 +179,7 @@ function toNode (things, api) {
 }
 
 function file (ipfs, dir) {
-  return ipfs.cat(`${DATA_HASH}/${dir}`)
-    .then((buffer) => {
-      return new Promise((resolve, reject) => {
-        buffer.pipe(bl((err, data) => {
-          if (err) return reject(err)
-          resolve(data)
-        }))
-      })
-    })
+  return concat(ipfs.cat(`${DATA_HASH}/${dir}`))
 }
 
 function main (ipfs) {
