@@ -17,7 +17,7 @@ const CHILDREN = 32
 //     |- blocks.csv
 //     |- countries.csv
 //     |- locations.csv
-const DATA_HASH = 'QmTMh5Q1CnB9jV774aKCvPSqibwDy9sJmo7BCThD5f1oY3'
+const DATA_HASH = 'QmVx8CwTy9bxSd1wbU9r4XpzKgHRQwKdRhDnebPV1kjErV'
 
 const progress = new EventEmitter()
 
