@@ -3,15 +3,19 @@
 
 const expect = require('chai').expect
 const geoip = require('../src')
-const IPFSFactory = require('ipfsd-ctl')
-const factory = IPFSFactory.create({ type: 'proc', exec: require('ipfs') })
+
+const Ctl = require('ipfsd-ctl')
 
 describe('lookup', function () {
   this.timeout(100 * 1000)
   let ipfs
+  let ipfsd
 
   before(async () => {
-    const ipfsd = await factory.spawn()
+    ipfsd = await Ctl.createController({
+      type: 'proc',
+      ipfsModule: require('ipfs')
+    })
     ipfs = ipfsd.api
   })
 
@@ -56,5 +60,9 @@ describe('lookup', function () {
         result.formatted
       ).to.be.eql('Mountain View, CA, United States, Earth')
     })
+  })
+
+  after(async () => {
+    await ipfsd.stop()
   })
 })
