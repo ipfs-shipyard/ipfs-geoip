@@ -209,7 +209,7 @@ function main (ipfs) {
     })
     .then((result) => {
       emit('pinning', 'end')
-      return result.Pinned[0]
+      return result[0].cid.toString()
     })
 }
 
