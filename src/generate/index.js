@@ -128,7 +128,7 @@ function putObject (data, min, api) {
           return {
             min: min,
             size: stat.CumulativeSize,
-            hash: stat.Hash
+            hash: cid.toString()
           }
         })
     })

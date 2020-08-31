@@ -34,7 +34,7 @@
     "inet_ipv4": "^1.0.1",
     "it-concat": "^1.0.0",
     "memoizee": "~0.4.14",
-    "multihashes": "~0.4.15"
+    "cids": "^1.0.0"
   },
   "devDependencies": {
     "aegir": "^22.0.0",
@@ -48,6 +48,7 @@
     "ipfs-http-client": "^46.0.1",
     "ipfsd-ctl": "^7.0.0",
     "lodash": "^4.17.15",
+    "multihashes": "^3.0.1",
     "pre-commit": "^1.2.2"
   },
   "directories": {

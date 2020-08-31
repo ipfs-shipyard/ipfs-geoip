@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
+const CID = require('cids')
+const multihash = require('multihashes')
+
 const chai = require('chai')
 const asPromised = require('chai-as-promised')
 chai.use(asPromised)
@@ -34,6 +37,15 @@ startIpNum,endIpNum,locId
 "16778240","16779263","3"
 "16779264","16781311","4"
 `)
+
+const enc = new TextEncoder()
+
+// identity multihash is useful for inlining data for use in tests
+const toIdentityCid = (val) => {
+  const bytes = enc.encode(val)
+  const mh = multihash.encode(bytes, 'identity')
+  return new CID(1, 'dag-pb', mh)
+}
 
 describe('generate', () => {
   it('parseCountries', () => {
@@ -92,9 +104,10 @@ describe('generate', () => {
   })
 
   it('putObject', () => {
+    const cid = toIdentityCid('myhash').toString()
     const api = {
       object: {
-        put: () => Promise.resolve({ Hash: 'myhash' }),
+        put: () => Promise.resolve(new CID(cid)),
         stat: (hash) => Promise.resolve({ CumulativeSize: 5 })
       }
     }
@@ -104,15 +117,15 @@ describe('generate', () => {
     ).to.eventually.be.eql({
       min: 3,
       size: 5,
-      hash: 'myhash'
+      hash: cid
     })
   })
 
   it('toNode', () => {
     const api = {
       object: {
-        put: (val) => Promise.resolve({ Hash: 'myhash' + val.length }),
-        stat: (hash) => Promise.resolve({ CumulativeSize: hash.length })
+        put: (val) => Promise.resolve(toIdentityCid('myhash' + val.length)),
+        stat: (hash) => Promise.resolve({ CumulativeSize: hash.toString().length })
       }
     }
 
@@ -126,8 +139,8 @@ describe('generate', () => {
       }], api)
     ).to.eventually.be.eql({
       min: 1,
-      size: 9,
-      hash: 'myhash147'
+      size: 22,
+      hash: toIdentityCid('myhash147').toString()
     })
   })
 })
