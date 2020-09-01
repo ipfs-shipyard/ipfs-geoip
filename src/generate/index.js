@@ -7,6 +7,8 @@ const _ = require('lodash')
 const EventEmitter = require('events').EventEmitter
 const concat = require('it-concat')
 
+const normalizeName = require('./overrides')
+
 // Btree size
 const CHILDREN = 32
 
@@ -17,7 +19,7 @@ const CHILDREN = 32
 //     |- blocks.csv
 //     |- countries.csv
 //     |- locations.csv
-const DATA_HASH = 'QmVx8CwTy9bxSd1wbU9r4XpzKgHRQwKdRhDnebPV1kjErV'
+const DATA_HASH = 'QmTMh5Q1CnB9jV774aKCvPSqibwDy9sJmo7BCThD5f1oY3'
 
 const progress = new EventEmitter()
 
@@ -30,13 +32,14 @@ function emit (type, status, attrs) {
 
 function parseCountries (countries) {
   emit('countries', 'start')
-  return csv.parseAsync(countries.toString(), {
+  return csv.parseAsync(countries, {
     columns: true,
+    cast: false,
     skip_empty_lines: true
   })
     .then((parsed) => {
       return _.reduce(parsed, (acc, row) => {
-        acc[row.alpha2] = row.name
+        acc[row.alpha2] = normalizeName(row.name)
         return acc
       }, {})
     })
@@ -48,9 +51,9 @@ function parseCountries (countries) {
 
 function parseLocations (locations, countries) {
   emit('locations', 'start')
-  return csv.parseAsync(iconv.decode(locations, 'latin1'), {
+  return csv.parseAsync(locations, {
     columns: true,
-    auto_parse: true,
+    cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
@@ -60,7 +63,7 @@ function parseLocations (locations, countries) {
           countries[row.country],
           row.country,
           row.region,
-          row.city,
+          normalizeName(row.city),
           row.postalCode,
           Number(row.latitude),
           Number(row.longitude),
@@ -78,9 +81,9 @@ function parseLocations (locations, countries) {
 
 function parseBlocks (blocks, locations) {
   emit('blocks', 'start')
-  return csv.parseAsync(blocks.toString(), {
+  return csv.parseAsync(blocks, {
     columns: true,
-    auto_parse: true,
+    cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
@@ -173,13 +176,16 @@ function toNode (things, api) {
 
   // divide
   return Promise.map(_.chunk(things, CHILDREN), (res) => toNode(res, api), {
-    concurrency: 5
+    concurrency: require('os').cpus().length * 2
   })
     .then((res) => toNode(res, api))
 }
 
-function file (ipfs, dir) {
-  return concat(ipfs.cat(`${DATA_HASH}/${dir}`))
+async function file (ipfs, dir) {
+  const buffer = await concat(ipfs.cat(`${DATA_HASH}/${dir}`), { type: 'buffer' })
+  // source files are in latin1, which requires handling with care
+  iconv.skipDecodeWarning = true
+  return iconv.decode(buffer, 'latin1')
 }
 
 function main (ipfs) {

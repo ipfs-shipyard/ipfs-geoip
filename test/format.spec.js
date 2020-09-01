@@ -9,26 +9,26 @@ describe('format', () => {
   it('formats with all details present', () => {
     expect(
       format([
-        'United States',
+        'USA',
         'US',
         'CA',
         'Mountain View',
-        94040,
+        '94040',
         37.386,
         -122.0838,
-        807,
-        650
+        '807',
+        '650'
       ])
     ).to.be.eql({
-      country_name: 'United States',
+      country_name: 'USA',
       country_code: 'US',
       region_code: 'CA',
       city: 'Mountain View',
-      postal_code: 94040,
+      postal_code: '94040',
       latitude: 37.386,
       longitude: -122.0838,
-      metro_code: 807,
-      area_code: 650,
+      metro_code: '807',
+      area_code: '650',
       planet: 'Earth'
     })
   })
@@ -36,7 +36,7 @@ describe('format', () => {
   it('formats with missing details', () => {
     expect(
       format([
-        'United States',
+        'USA',
         'US',
         'CA',
         '',
@@ -47,7 +47,7 @@ describe('format', () => {
         ''
       ])
     ).to.be.eql({
-      country_name: 'United States',
+      country_name: 'USA',
       country_code: 'US',
       region_code: 'CA',
       city: '',

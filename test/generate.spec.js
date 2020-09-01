@@ -56,7 +56,7 @@ describe('generate', () => {
       AD: 'Andorra',
       AE: 'United Arab Emirates',
       AF: 'Afghanistan',
-      AG: 'Antigua And Barbuda'
+      AG: 'Antigua and Barbuda'
     })
   })
 
@@ -67,13 +67,13 @@ describe('generate', () => {
         AD: 'Andorra',
         AE: 'United Arab Emirates',
         AF: 'Afghanistan',
-        AG: 'Antigua And Barbuda'
+        AG: 'Antigua and Barbuda'
       })
     ).to.eventually.be.eql({
       1: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', ''],
       2: ['United Arab Emirates', 'AE', '', '', '', 24, 54, '', ''],
       3: ['Afghanistan', 'AF', '', '', '', 33, 65, '', ''],
-      4: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
+      4: ['Antigua and Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
     })
   })
 
@@ -83,7 +83,7 @@ describe('generate', () => {
         1: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', ''],
         2: ['United Arab Emirates', 'AE', '', '', '', 24, 54, '', ''],
         3: ['Afghanistan', 'AF', '', '', '', 33, 65, '', ''],
-        4: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
+        4: ['Antigua and Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
       })
     ).to.eventually.be.eql([{
       min: 1,
@@ -99,7 +99,7 @@ describe('generate', () => {
       data: ['Afghanistan', 'AF', '', '', '', 33, 65, '', '']
     }, {
       min: 16779264,
-      data: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
+      data: ['Antigua and Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
     }])
   })
 

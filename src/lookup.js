@@ -6,7 +6,7 @@ const CID = require('cids')
 
 const formatData = require('./format')
 
-const GEOIP_ROOT = new CID('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ')
+const GEOIP_ROOT = new CID('Qmdzx1Xm3JTbtVaF4AYwfHHs372X6q2UJXS3XHoQu2Z3qM')
 
 /**
  * @param {Object} ipfs

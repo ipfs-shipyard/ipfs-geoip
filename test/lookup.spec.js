@@ -32,15 +32,15 @@ describe('lookup', function () {
     expect(
       result
     ).to.be.eql({
-      country_name: 'United States',
+      country_name: 'USA',
       country_code: 'US',
       region_code: 'CA',
       city: 'Mountain View',
-      postal_code: 94040,
+      postal_code: '94040',
       latitude: 37.386,
       longitude: -122.0838,
-      metro_code: 807,
-      area_code: 650,
+      metro_code: '807',
+      area_code: '650',
       planet: 'Earth'
     })
   })
@@ -58,7 +58,7 @@ describe('lookup', function () {
       const result = await geoip.lookupPretty(ipfs, '/ip4/8.8.8.8')
       expect(
         result.formatted
-      ).to.be.eql('Mountain View, CA, United States, Earth')
+      ).to.be.eql('Mountain View, CA, USA, Earth')
     })
   })
 
