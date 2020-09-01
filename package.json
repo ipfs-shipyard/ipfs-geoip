@@ -31,10 +31,10 @@
     "generate": "bin/generate"
   },
   "dependencies": {
+    "cids": "^1.0.0",
     "inet_ipv4": "^1.0.1",
     "it-concat": "^1.0.0",
-    "memoizee": "~0.4.14",
-    "cids": "^1.0.0"
+    "p-memoize": "^4.0.0"
   },
   "devDependencies": {
     "aegir": "^22.0.0",
