@@ -29,13 +29,13 @@ jobs:
       name: chrome
       addons:
         chrome: stable
-      script: npx aegir test -t browser -t webworker --timeout 10000
+      script: npx aegir test --node -t browser -t webworker --timeout 10000
 
     - stage: test
       name: firefox
       addons:
         firefox: latest
-      script: npx aegir test -t browser -t webworker -- --browsers FirefoxHeadless
+      script: npx aegir test --node -t browser -t webworker -- --browsers FirefoxHeadless
 
     - stage: test
       name: electron-main
