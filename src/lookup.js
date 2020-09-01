@@ -1,6 +1,6 @@
 'use strict'
 
-const memoize = require('memoizee')
+const memoize = require('p-memoize')
 const inet = require('inet_ipv4')
 const CID = require('cids')
 
@@ -60,7 +60,14 @@ async function _lookup (ipfs, cid, lookfor) {
   }
 }
 
-const memoizedLookup = memoize(_lookup, { promise: true })
+const memoizedLookup = memoize(_lookup, {
+  cachePromiseRejection: false,
+  cacheKey: args => {
+    // cache based on cid+ip: we ignore first argument, which is ipfs api instance
+    const [, cid, lookfor] = args
+    return `${cid}.${lookfor}`
+  }
+})
 
 /**
  * @param {Object} ipfs
