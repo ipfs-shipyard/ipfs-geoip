@@ -1,3 +1,13 @@
+<a name="5.0.0"></a>
+# [5.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v4.1.0...v5.0.0) (2020-09-01)
+
+
+### Bug Fixes
+
+* update country names ([#76](https://github.com/ipfs-shipyard/ipfs-geoip/issues/76)) ([670b55b](https://github.com/ipfs-shipyard/ipfs-geoip/commit/670b55b))
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/ipfs/ipfs-geoip/compare/v4.0.0...v4.1.0) (2020-05-26)
 
