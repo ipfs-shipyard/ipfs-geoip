@@ -6,6 +6,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![Dependency Status](https://david-dm.org/ipfs/ipfs-geoip.svg?style=flat-square)](https://david-dm.org/ipfs/ipfs-geoip)
 [![Travis CI](https://img.shields.io/travis/ipfs/ipfs-geoip/master.svg?style=flat-square)](https://travis-ci.org/ipfs/ipfs-geoip)
+[![](https://data.jsdelivr.com/v1/package/npm/ipfs-geoip/badge)](https://www.jsdelivr.com/package/npm/ipfs-geoip)
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/ipfs-geoip/badge.svg?branch=master)](https://coveralls.io/github/ipfs/ipfs-geoip?branch=master)
 
 > geoip lookup over ipfs
@@ -25,7 +26,7 @@ Instead of a local installation (and browserification) you may request a [remote
 
 ```html
 <!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@4.1.0/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@5.0.0/dist/index.min.js" integrity="sha256-EsHLf3EksJ7oT0k0Yn+k4Gp4HVAY7LJb7dOfz5BkEnw=" crossorigin="anonymous"></script>
 ```
 
 When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
@@ -63,7 +64,7 @@ Returns a promise that resolves to an object of the form
 ```js
 {
   "country_code": "US",
-  "country_name": "United States",
+  "country_name": "USA",
   "region_code": "CA",
   "city": "Mountain View",
   "postal_code": "94040",
@@ -99,7 +100,7 @@ You can find an example of how to use this in [`example/lookup.js`](example/look
 ```bash
 $ node example/lookup.js 8.8.8.8
 Result: {
-  "country_name": "United States",
+  "country_name": "USA",
   "country_code": "US",
   "region_code": "CA",
   "city": "Mountain View",
@@ -110,7 +111,7 @@ Result: {
   "area_code": "650",
   "planet": "Earth"
 }
-Pretty result: Mountain View, CA, United States, Earth
+Pretty result: Mountain View, CA, USA, Earth
 ```
 
 ## Root hash
