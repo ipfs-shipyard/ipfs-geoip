@@ -28,7 +28,10 @@ ipfs.id()
 
       if (event.type === 'put') {
         counter++
-        gauge.show('Uploading', (counter / (length / 32)))
+        const objects = length / 32
+        const completed = counter / objects
+        gauge.pulse(`${counter}/${objects.toFixed()} (${(completed * 100).toFixed()}%)`)
+        gauge.show('importing objects to IPFS', completed)
       }
 
       if (event.status === 'start' && event.type !== 'put') {

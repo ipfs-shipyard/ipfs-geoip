@@ -2,21 +2,25 @@
 
 const memoize = require('memoizee')
 const inet = require('inet_ipv4')
-const mh = require('multihashes')
+const CID = require('cids')
 
 const formatData = require('./format')
 
-const GEOIP_ROOT = mh.fromB58String('QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ')
+const GEOIP_ROOT = new CID('Qmdzx1Xm3JTbtVaF4AYwfHHs372X6q2UJXS3XHoQu2Z3qM')
 
 /**
  * @param {Object} ipfs
- * @param {string} hash
+ * @param {CID} cid
  * @param {string} lookfor - ip
  * @returns {Promise}
  */
-async function _lookup (ipfs, hash, lookfor) {
-  const res = await ipfs.object.get(hash)
+async function _lookup (ipfs, cid, lookfor) {
+  // ensure input is a valid cid, but switch to string representation
+  // to avoid serialization issues when mix of cids >1.0 and <1.0 are used
+  cid = new CID(cid).toString()
+  const res = await ipfs.object.get(cid)
   const obj = JSON.parse(res.Data)
+
   let child = 0
 
   if (obj.type === 'Node') {
@@ -69,6 +73,6 @@ module.exports = function lookup (ipfs, ip) {
 
 function getCid (node) {
   if (!node) return null
-  if (node.Hash) return node.Hash.toString()
+  if (node.Hash) return node.Hash
   return null
 }

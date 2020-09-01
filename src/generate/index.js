@@ -5,7 +5,9 @@ const csv = Promise.promisifyAll(require('csv'))
 const iconv = require('iconv-lite')
 const _ = require('lodash')
 const EventEmitter = require('events').EventEmitter
-const bl = require('bl')
+const concat = require('it-concat')
+
+const normalizeName = require('./overrides')
 
 // Btree size
 const CHILDREN = 32
@@ -30,13 +32,14 @@ function emit (type, status, attrs) {
 
 function parseCountries (countries) {
   emit('countries', 'start')
-  return csv.parseAsync(countries.toString(), {
+  return csv.parseAsync(countries, {
     columns: true,
+    cast: false,
     skip_empty_lines: true
   })
     .then((parsed) => {
       return _.reduce(parsed, (acc, row) => {
-        acc[row.alpha2] = row.name
+        acc[row.alpha2] = normalizeName(row.name)
         return acc
       }, {})
     })
@@ -48,9 +51,9 @@ function parseCountries (countries) {
 
 function parseLocations (locations, countries) {
   emit('locations', 'start')
-  return csv.parseAsync(iconv.decode(locations, 'latin1'), {
+  return csv.parseAsync(locations, {
     columns: true,
-    auto_parse: true,
+    cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
@@ -60,7 +63,7 @@ function parseLocations (locations, countries) {
           countries[row.country],
           row.country,
           row.region,
-          row.city,
+          normalizeName(row.city),
           row.postalCode,
           Number(row.latitude),
           Number(row.longitude),
@@ -78,9 +81,9 @@ function parseLocations (locations, countries) {
 
 function parseBlocks (blocks, locations) {
   emit('blocks', 'start')
-  return csv.parseAsync(blocks.toString(), {
+  return csv.parseAsync(blocks, {
     columns: true,
-    auto_parse: true,
+    cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
@@ -117,18 +120,18 @@ function parseBlocks (blocks, locations) {
 }
 
 function putObject (data, min, api) {
-  return api.object.put(data, 'json')
-    .then((put) => {
-      return api.object.stat(put.Hash)
+  return api.object.put(data, { enc: 'json' })
+    .then((cid) => {
+      return api.object.stat(cid)
         .then((stat) => {
           if (!stat) {
-            throw new Error(`Could not stat object ${put.Hash}`)
+            throw new Error(`Could not stat object ${cid.toString()}`)
           }
           emit('put', 'end')
           return {
             min: min,
             size: stat.CumulativeSize,
-            hash: put.Hash
+            hash: cid.toString()
           }
         })
     })
@@ -173,21 +176,16 @@ function toNode (things, api) {
 
   // divide
   return Promise.map(_.chunk(things, CHILDREN), (res) => toNode(res, api), {
-    concurrency: 5
+    concurrency: require('os').cpus().length * 2
   })
     .then((res) => toNode(res, api))
 }
 
-function file (ipfs, dir) {
-  return ipfs.cat(`${DATA_HASH}/${dir}`)
-    .then((buffer) => {
-      return new Promise((resolve, reject) => {
-        buffer.pipe(bl((err, data) => {
-          if (err) return reject(err)
-          resolve(data)
-        }))
-      })
-    })
+async function file (ipfs, dir) {
+  const buffer = await concat(ipfs.cat(`${DATA_HASH}/${dir}`), { type: 'buffer' })
+  // source files are in latin1, which requires handling with care
+  iconv.skipDecodeWarning = true
+  return iconv.decode(buffer, 'latin1')
 }
 
 function main (ipfs) {
@@ -217,7 +215,7 @@ function main (ipfs) {
     })
     .then((result) => {
       emit('pinning', 'end')
-      return result.Pinned[0]
+      return result[0].cid.toString()
     })
 }
 

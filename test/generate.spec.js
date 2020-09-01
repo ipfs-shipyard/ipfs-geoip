@@ -1,6 +1,9 @@
 /* eslint-env mocha */
 'use strict'
 
+const CID = require('cids')
+const multihash = require('multihashes')
+
 const chai = require('chai')
 const asPromised = require('chai-as-promised')
 chai.use(asPromised)
@@ -35,6 +38,15 @@ startIpNum,endIpNum,locId
 "16779264","16781311","4"
 `)
 
+const enc = new TextEncoder()
+
+// identity multihash is useful for inlining data for use in tests
+const toIdentityCid = (val) => {
+  const bytes = enc.encode(val)
+  const mh = multihash.encode(bytes, 'identity')
+  return new CID(1, 'dag-pb', mh)
+}
+
 describe('generate', () => {
   it('parseCountries', () => {
     return expect(
@@ -44,7 +56,7 @@ describe('generate', () => {
       AD: 'Andorra',
       AE: 'United Arab Emirates',
       AF: 'Afghanistan',
-      AG: 'Antigua And Barbuda'
+      AG: 'Antigua and Barbuda'
     })
   })
 
@@ -55,13 +67,13 @@ describe('generate', () => {
         AD: 'Andorra',
         AE: 'United Arab Emirates',
         AF: 'Afghanistan',
-        AG: 'Antigua And Barbuda'
+        AG: 'Antigua and Barbuda'
       })
     ).to.eventually.be.eql({
       1: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', ''],
       2: ['United Arab Emirates', 'AE', '', '', '', 24, 54, '', ''],
       3: ['Afghanistan', 'AF', '', '', '', 33, 65, '', ''],
-      4: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
+      4: ['Antigua and Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
     })
   })
 
@@ -71,7 +83,7 @@ describe('generate', () => {
         1: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', ''],
         2: ['United Arab Emirates', 'AE', '', '', '', 24, 54, '', ''],
         3: ['Afghanistan', 'AF', '', '', '', 33, 65, '', ''],
-        4: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
+        4: ['Antigua and Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
       })
     ).to.eventually.be.eql([{
       min: 1,
@@ -87,14 +99,15 @@ describe('generate', () => {
       data: ['Afghanistan', 'AF', '', '', '', 33, 65, '', '']
     }, {
       min: 16779264,
-      data: ['Antigua And Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
+      data: ['Antigua and Barbuda', 'AG', '', '', '', 17.05, -61.8, '', '']
     }])
   })
 
   it('putObject', () => {
+    const cid = toIdentityCid('myhash').toString()
     const api = {
       object: {
-        put: () => Promise.resolve({ Hash: 'myhash' }),
+        put: () => Promise.resolve(new CID(cid)),
         stat: (hash) => Promise.resolve({ CumulativeSize: 5 })
       }
     }
@@ -104,15 +117,15 @@ describe('generate', () => {
     ).to.eventually.be.eql({
       min: 3,
       size: 5,
-      hash: 'myhash'
+      hash: cid
     })
   })
 
   it('toNode', () => {
     const api = {
       object: {
-        put: (val) => Promise.resolve({ Hash: 'myhash' + val.length }),
-        stat: (hash) => Promise.resolve({ CumulativeSize: hash.length })
+        put: (val) => Promise.resolve(toIdentityCid('myhash' + val.length)),
+        stat: (hash) => Promise.resolve({ CumulativeSize: hash.toString().length })
       }
     }
 
@@ -126,8 +139,8 @@ describe('generate', () => {
       }], api)
     ).to.eventually.be.eql({
       min: 1,
-      size: 9,
-      hash: 'myhash147'
+      size: 22,
+      hash: toIdentityCid('myhash147').toString()
     })
   })
 })

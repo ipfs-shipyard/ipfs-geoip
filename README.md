@@ -115,7 +115,7 @@ Pretty result: Mountain View, CA, United States, Earth
 
 ## Root hash
 
-The current root hash for lookups is `QmRn43NNNBEibc6m7zVNcS6UusB1u3qTTfyoLmkugbeeGJ`.
+The current root hash for lookups is defined under `GEOIP_ROOT` in `src/lookup.js`
 
 ## Contribute
 
