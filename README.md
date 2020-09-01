@@ -26,7 +26,7 @@ Instead of a local installation (and browserification) you may request a [remote
 
 ```html
 <!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@5.0.0/dist/index.min.js" integrity="sha256-EsHLf3EksJ7oT0k0Yn+k4Gp4HVAY7LJb7dOfz5BkEnw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@5.0.1/dist/index.min.js"></script>
 ```
 
 When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
