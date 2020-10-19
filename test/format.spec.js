@@ -15,9 +15,7 @@ describe('format', () => {
         'Mountain View',
         '94040',
         37.386,
-        -122.0838,
-        '807',
-        '650'
+        -122.0838
       ])
     ).to.be.eql({
       country_name: 'USA',
@@ -27,8 +25,6 @@ describe('format', () => {
       postal_code: '94040',
       latitude: 37.386,
       longitude: -122.0838,
-      metro_code: '807',
-      area_code: '650',
       planet: 'Earth'
     })
   })
@@ -42,9 +38,7 @@ describe('format', () => {
         '',
         '',
         37.386,
-        -122.0838,
-        '',
-        ''
+        -122.0838
       ])
     ).to.be.eql({
       country_name: 'USA',
@@ -54,8 +48,6 @@ describe('format', () => {
       postal_code: '',
       latitude: 37.386,
       longitude: -122.0838,
-      metro_code: '',
-      area_code: '',
       planet: 'Earth'
     })
   })

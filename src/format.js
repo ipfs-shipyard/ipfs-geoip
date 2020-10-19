@@ -12,8 +12,6 @@ module.exports = function formatData (data) {
     postal_code: data[4],
     latitude: data[5],
     longitude: data[6],
-    metro_code: data[7],
-    area_code: data[8],
     planet: PLANET
   }
 }

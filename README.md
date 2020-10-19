@@ -70,8 +70,6 @@ Returns a promise that resolves to an object of the form
   "postal_code": "94040",
   "latitude": 37.3860,
   "longitude": -122.0838,
-  "metro_code": "807",
-  "area_code": "650",
   "planet": "Earth"
 }
 ```
@@ -84,6 +82,11 @@ a `formatted` property that looks like this: `Mountain View, CA, United States, 
 ## b-tree
 
 The utility geoip-gen reads csv files provided from GeoLite, and turns them into a 32-way branching b-tree, which is stored as ipfs json objects.
+
+**Note:** this library uses old type of ipfs json objects for legacy reasons,
+be mindful of that and do not use its code as an example.  Modern code should
+use [`dag-cbor`](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
+and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) API.
 
 There is a generator included, that can be run with
 
@@ -107,8 +110,6 @@ Result: {
   "postal_code": "94040",
   "latitude": 37.386,
   "longitude": -122.0838,
-  "metro_code": "807",
-  "area_code": "650",
   "planet": "Earth"
 }
 Pretty result: Mountain View, CA, USA, Earth
@@ -130,4 +131,6 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/c
 
 ## License
 
-[MIT](LICENSE)
+ipfs-geoip is [MIT](LICENSE) licensed.
+
+This library includes GeoLite2 data created by MaxMind, available from [maxmind.com](http://www.maxmind.com).

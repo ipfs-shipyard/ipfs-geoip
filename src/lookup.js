@@ -1,12 +1,12 @@
 'use strict'
 
 const memoize = require('p-memoize')
-const inet = require('inet_ipv4')
+const ip = require('ip')
 const CID = require('cids')
 
 const formatData = require('./format')
 
-const GEOIP_ROOT = new CID('QmPeUAhjacm8v59z5rZhCEhvWvwvA2DoMVY2w7ZuwbQGjv')
+const GEOIP_ROOT = new CID('Qmbt1YbZAhMoqo7r1t6Y5EJrYGVRgcaisNAZhLeJY6ehfg') // GeoLite2-City-CSV_20201013
 
 /**
  * @param {Object} ipfs
@@ -19,6 +19,8 @@ async function _lookup (ipfs, cid, lookfor) {
   // to avoid serialization issues when mix of cids >1.0 and <1.0 are used
   cid = new CID(cid).toString()
   const res = await ipfs.object.get(cid)
+
+  // TODO: use dag-cbor instead of stringified JSON
   const obj = JSON.parse(res.Data)
 
   let child = 0
@@ -71,11 +73,11 @@ const memoizedLookup = memoize(_lookup, {
 
 /**
  * @param {Object} ipfs
- * @param {string} ip
+ * @param {string} ipstring
  * @returns {Promise}
  */
-module.exports = function lookup (ipfs, ip) {
-  return memoizedLookup(ipfs, GEOIP_ROOT, inet.aton(ip))
+module.exports = function lookup (ipfs, ipstring) {
+  return memoizedLookup(ipfs, GEOIP_ROOT, ip.toLong(ipstring))
 }
 
 function getCid (node) {
