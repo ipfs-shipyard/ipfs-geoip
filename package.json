@@ -1,6 +1,6 @@
 {
   "name": "ipfs-geoip",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "Library for ipfs geoip lookups",
   "keywords": [
     "ipfs",
@@ -63,8 +63,8 @@
   ],
   "contributors": [
     "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
-    "Kristoffer Ström <kristoffer@rymdkoloni.se>",
     "Marcin Rataj <lidel@lidel.org>",
+    "Kristoffer Ström <kristoffer@rymdkoloni.se>",
     "David Dias <daviddias.p@gmail.com>",
     "Henrique Dias <hacdias@gmail.com>",
     "Oli Evans <oli@tableflip.io>",
