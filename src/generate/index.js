@@ -41,7 +41,7 @@ function parseCountries (locations) {
   })
     .then((parsed) => {
       return _.reduce(parsed, (acc, row) => {
-        if (typeof acc[row.country_iso_code] === 'undefined') {
+        if (typeof acc[row.country_iso_code] != null) { // eslint-disable-line  valid-typeof
           acc[row.country_iso_code] = normalizeName(row.country_name)
         }
         return acc
