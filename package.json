@@ -24,7 +24,7 @@
   "scripts": {
     "lint": "aegir lint",
     "release": "aegir release --node",
-    "build": "aegir build",
+    "build": "aegir build --node",
     "test": "aegir test --node",
     "test:node": "aegir test --node --target node",
     "test:browser": "aegir test --node --target browser",
