@@ -26,7 +26,7 @@ Instead of a local installation (and browserification) you may request a [remote
 
 ```html
 <!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@5.0.1/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@6.0.0/dist/index.min.js"></script>
 ```
 
 When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
@@ -38,7 +38,7 @@ When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.
 const geoip = require('ipfs-geoip')
 const ipfs = require('ipfs-http-client')()
 
-const exampleIp = '89.114.95.36'
+const exampleIp = '66.6.44.4'
 
 try {
   const result = await geoip.lookup(ipfs, exampleIp)
@@ -94,25 +94,25 @@ There is a generator included, that can be run with
 $ npm run generate
 ```
 
-This takes quite a long time to import, but you only need to do it once globally to use the lookup feature.
+This takes quite a long time to import, but you only need to do it once when updating the global index used by the lookup feature.
 
 ## Example
 
 You can find an example of how to use this in [`example/lookup.js`](example/lookup.js), which you can use like this:
 
 ```bash
-$ node example/lookup.js 8.8.8.8
+$ node example/lookup.js 66.6.44.4
 Result: {
   "country_name": "USA",
   "country_code": "US",
-  "region_code": "CA",
-  "city": "Mountain View",
-  "postal_code": "94040",
-  "latitude": 37.386,
-  "longitude": -122.0838,
+  "region_code": "NY",
+  "city": "New York",
+  "postal_code": "10004",
+  "latitude": 40.7126,
+  "longitude": -74.0066,
   "planet": "Earth"
 }
-Pretty result: Mountain View, CA, USA, Earth
+Pretty result: New York, NY, USA, Earth
 ```
 
 ## Root hash
