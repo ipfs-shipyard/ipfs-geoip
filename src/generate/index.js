@@ -3,6 +3,7 @@
 const Promise = require('bluebird')
 const csv = Promise.promisifyAll(require('csv'))
 const iconv = require('iconv-lite')
+const ip = require('ip')
 const _ = require('lodash')
 const EventEmitter = require('events').EventEmitter
 const concat = require('it-concat')
@@ -12,14 +13,15 @@ const normalizeName = require('./overrides')
 // Btree size
 const CHILDREN = 32
 
-// All data is stored in an ipfs folder called data
-// this is the hash of that folder. It includes three files
+// All data is stored in an ipfs folder called DATA_HASH
+// It includes two files
 //
-//     data
-//     |- blocks.csv
-//     |- countries.csv
-//     |- locations.csv
-const DATA_HASH = 'QmTMh5Q1CnB9jV774aKCvPSqibwDy9sJmo7BCThD5f1oY3'
+//     DATA_HASH
+//     |- locationsCsv
+//     |- blocksCsv
+const DATA_HASH = 'bafybeid3munsqqt36qhoumn3kvgwmft6dsswzgl3wiohsanlyqemczcsvi' // GeoLite2-City-CSV_20201013
+const locationsCsv = 'GeoLite2-City-Locations-en.csv'
+const blocksCsv = 'GeoLite2-City-Blocks-IPv4.csv'
 
 const progress = new EventEmitter()
 
@@ -30,16 +32,18 @@ function emit (type, status, attrs) {
   }, attrs))
 }
 
-function parseCountries (countries) {
+function parseCountries (locations) {
   emit('countries', 'start')
-  return csv.parseAsync(countries, {
+  return csv.parseAsync(locations, {
     columns: true,
     cast: false,
     skip_empty_lines: true
   })
     .then((parsed) => {
       return _.reduce(parsed, (acc, row) => {
-        acc[row.alpha2] = normalizeName(row.name)
+        if (typeof acc[row.country_iso_code] != null) { // eslint-disable-line  valid-typeof
+          acc[row.country_iso_code] = normalizeName(row.country_name)
+        }
         return acc
       }, {})
     })
@@ -59,16 +63,11 @@ function parseLocations (locations, countries) {
   })
     .then((parsed) => {
       return _.reduce(parsed, (acc, row) => {
-        acc[row.locId] = [
-          countries[row.country],
-          row.country,
-          row.region,
-          normalizeName(row.city),
-          row.postalCode,
-          Number(row.latitude),
-          Number(row.longitude),
-          row.metroCode,
-          row.areaCode
+        acc[row.geoname_id] = [
+          countries[row.country_iso_code],
+          row.country_iso_code,
+          row.subdivision_1_iso_code,
+          normalizeName(row.city_name)
         ]
         return acc
       }, {})
@@ -88,12 +87,25 @@ function parseBlocks (blocks, locations) {
     comment: '#'
   })
     .then((parsed) => {
-      var lastEnd = 0
+      let lastEnd = 0
 
       return _.reduce(parsed, (acc, row) => {
-        var start = Number(row.startIpNum)
-        var end = Number(row.endIpNum)
-        var locid = row.locId
+        const { firstAddress, lastAddress } = ip.cidrSubnet(row.network)
+        const start = ip.toLong(firstAddress)
+        const end = ip.toLong(lastAddress)
+
+        const { geoname_id } = row // eslint-disable-line camelcase
+        const geonameData = locations[geoname_id]
+
+        // conform to legacy input format by filling up missing data the first time
+        // a geoname is inspected
+        if (Array.isArray(geonameData) && geonameData.length < 7) {
+          geonameData.push(
+            String(row.postal_code),
+            Number(row.latitude),
+            Number(row.longitude)
+          )
+        }
 
         // unmapped range?
         if ((start - lastEnd) > 1) {
@@ -105,7 +117,7 @@ function parseBlocks (blocks, locations) {
 
         acc.push({
           min: start,
-          data: locations[locid]
+          data: geonameData
         })
 
         lastEnd = end
@@ -139,6 +151,7 @@ function putObject (data, min, api) {
 
 // Create a btree leaf with data
 function createLeaf (data) {
+  // TODO: use dag-cbor instead of stringified JSON
   return Buffer.from(JSON.stringify({
     Data: JSON.stringify({
       type: 'Leaf',
@@ -148,6 +161,7 @@ function createLeaf (data) {
 }
 // Create a btree node with data
 function createNode (data) {
+  // TODO: use dag-cbor instead of stringified JSON
   return Buffer.from(JSON.stringify({
     Data: JSON.stringify({
       type: 'Node',
@@ -189,15 +203,15 @@ async function file (ipfs, dir) {
 }
 
 function main (ipfs) {
-  return file(ipfs, 'countries.csv')
+  return file(ipfs, locationsCsv)
     .then(parseCountries)
     .then((countries) => Promise.join(
-      file(ipfs, 'locations.csv'),
+      file(ipfs, locationsCsv),
       countries,
       parseLocations
     ))
     .then((locations) => Promise.join(
-      file(ipfs, 'blocks.csv'),
+      file(ipfs, blocksCsv),
       locations,
       parseBlocks
     ))

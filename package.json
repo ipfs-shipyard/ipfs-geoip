@@ -23,7 +23,7 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "release": "aegir release",
+    "release": "aegir release --node",
     "build": "aegir build",
     "test": "aegir test --node",
     "test:node": "aegir test --node --target node",
@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "cids": "^1.0.0",
-    "inet_ipv4": "^1.0.1",
+    "ip": "^1.1.5",
     "it-concat": "^1.0.0",
     "p-memoize": "^4.0.0"
   },
