@@ -1,3 +1,18 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v5.0.1...v6.0.0) (2020-10-20)
+
+
+### Bug Fixes
+
+* restore browser bundle build ([619dc35](https://github.com/ipfs-shipyard/ipfs-geoip/commit/619dc35))
+
+
+### Features
+
+* updated dataset (2020-10-13) ([#80](https://github.com/ipfs-shipyard/ipfs-geoip/issues/80)) ([1de0d2b](https://github.com/ipfs-shipyard/ipfs-geoip/commit/1de0d2b))
+
+
+
 <a name="5.0.1"></a>
 ## [5.0.1](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v5.0.0...v5.0.1) (2020-09-01)
 
