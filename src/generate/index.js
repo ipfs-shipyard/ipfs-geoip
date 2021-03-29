@@ -196,6 +196,7 @@ function toNode (things, api) {
 }
 
 async function file (ipfs, dir) {
+  // TODO: refactor from Buffer to Uint8Array
   const buffer = await concat(ipfs.cat(`${DATA_HASH}/${dir}`), { type: 'buffer' })
   // source files are in latin1, which requires handling with care
   iconv.skipDecodeWarning = true

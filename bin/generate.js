@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* eslint no-console: "off" */
+/* eslint no-console: "off",  no-unreachable: "off" */
 'use strict'
 
 const Gauge = require('gauge')
@@ -10,6 +10,10 @@ function handleNoApi () {
   console.error('No ipfs daemon running. Please start one')
   process.exit(1)
 }
+
+// TODO
+console.log('Unable to build: src/generate/index.js needs to be refactored to use the latest JS API. PRs welcome: https://github.com/ipfs-shipyard/ipfs-geoip')
+process.exit(1)
 
 // -- CLI interaction
 ipfs.id()
