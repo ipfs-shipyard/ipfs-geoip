@@ -1,3 +1,18 @@
+<a name="7.0.0"></a>
+# [7.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v6.0.0...v7.0.0) (2021-03-29)
+
+
+### Bug Fixes
+
+* support Uint8Array in ipfs.object.get ([#82](https://github.com/ipfs-shipyard/ipfs-geoip/issues/82)) ([5b85b6d](https://github.com/ipfs-shipyard/ipfs-geoip/commit/5b85b6d))
+
+
+### BREAKING CHANGES
+
+* expects ipfs.object.get to return Uint8Array
+
+
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v5.0.1...v6.0.0) (2020-10-20)
 
