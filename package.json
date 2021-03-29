@@ -31,31 +31,36 @@
     "generate": "bin/generate.js"
   },
   "dependencies": {
-    "cids": "^1.0.0",
+    "cids": "^1.1.6",
     "ip": "^1.1.5",
-    "it-concat": "^1.0.0",
-    "p-memoize": "^4.0.0"
+    "it-concat": "^1.0.3",
+    "p-memoize": "^4.0.1",
+    "web-encoding": "^1.1.0"
   },
   "devDependencies": {
     "aegir": "^26.0.0",
     "bluebird": "^3.7.2",
-    "chai": "^4.2.0",
+    "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
-    "csv": "^5.3.2",
+    "csv": "^5.4.0",
     "gauge": "^3.0.0",
     "iconv-lite": "~0.6.2",
-    "ipfs": "~0.49.1",
-    "ipfs-http-client": "^46.0.1",
-    "ipfsd-ctl": "^7.0.0",
-    "lodash": "^4.17.20",
-    "multihashes": "^3.0.1",
+    "ipfs": "^0.54.4",
+    "ipfs-http-client": "^49.0.4",
+    "ipfsd-ctl": "^7.2.0",
+    "lodash": "^4.17.21",
+    "multihashes": "^4.0.2",
     "pre-commit": "^1.2.2"
+  },
+  "browser": {
+    "os": false,
+    "util": "web-encoding"
   },
   "directories": {
     "example": "example"
   },
   "engines": {
-    "node": ">=10.0.0",
+    "node": ">=14.0.0",
     "npm": ">=6.0.0"
   },
   "pre-commit": [

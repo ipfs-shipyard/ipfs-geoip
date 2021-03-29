@@ -3,6 +3,8 @@
 const memoize = require('p-memoize')
 const ip = require('ip')
 const CID = require('cids')
+const { TextDecoder } = require('web-encoding')
+const utf8Decoder = new TextDecoder('utf8')
 
 const formatData = require('./format')
 
@@ -18,10 +20,18 @@ async function _lookup (ipfs, cid, lookfor) {
   // ensure input is a valid cid, but switch to string representation
   // to avoid serialization issues when mix of cids >1.0 and <1.0 are used
   cid = new CID(cid).toString()
-  const res = await ipfs.object.get(cid)
 
   // TODO: use dag-cbor instead of stringified JSON
-  const obj = JSON.parse(res.Data)
+  let res
+  let obj
+  try {
+    res = await ipfs.object.get(cid)
+    obj = JSON.parse(utf8Decoder.decode(res.Data))
+  } catch (e) {
+    // log error, this makes things waaaay easier to fix in case API changes again
+    console.error(`[ipfs-geoip] failed to get and parse Data via ipfs.object.get('${cid}')`, e) // eslint-disable-line no-console
+    throw e
+  }
 
   let child = 0
 
