@@ -36,7 +36,7 @@ When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.
 
 ```js
 const geoip = require('ipfs-geoip')
-const ipfs = require('ipfs-http-client')()
+const ipfs = require('ipfs-http-client')
 
 const exampleIp = '66.6.44.4'
 
