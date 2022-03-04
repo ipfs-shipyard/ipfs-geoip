@@ -83,10 +83,10 @@ a `formatted` property that looks like this: `Mountain View, CA, United States, 
 
 The utility geoip-gen reads csv files provided from GeoLite, and turns them into a 32-way branching b-tree, which is stored as ipfs json objects.
 
-**Note:** this library uses old type of ipfs json objects for legacy reasons,
+> 👉  **Note:** this library uses old type of ipfs json objects for legacy reasons,
 be mindful of that and do not use its code as an example.  Modern code should
 use [`dag-cbor`](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
-and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) API.
+and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) or [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md) APIs.
 
 There is a generator included, that can be run with
 
