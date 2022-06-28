@@ -11,6 +11,26 @@
 
 > geoip lookup over ipfs
 
+
+# Table of Contents
+
+- [IPFS GeoIP](#ipfs-geoip)
+- [Table of Contents](#table-of-contents)
+  - [Install](#install)
+    - [NPM](#npm)
+    - [CDN](#cdn)
+  - [Usage](#usage)
+  - [API](#api)
+    - [`lookup(ipfs, ip)`](#lookupipfs-ip)
+    - [`lookupPretty(ipfs, multiaddrs)`](#lookupprettyipfs-multiaddrs)
+  - [Maintenance](#maintenance)
+    - [CIDs of the lookup dataset](#cids-of-the-lookup-dataset)
+    - [Updating GeoLite2 dataset](#updating-geolite2-dataset)
+  - [Testing in CLI](#testing-in-cli)
+  - [Contribute](#contribute)
+    - [Want to hack on IPFS?](#want-to-hack-on-ipfs)
+  - [License](#license)
+
 ## Install
 
 ### NPM
@@ -79,14 +99,15 @@ Returns a promise that resolves to an object of the form
 Provides the same results as `lookup` with the addition of
 a `formatted` property that looks like this: `Mountain View, CA, United States, Earth`.
 
-## b-tree
+## Maintenance
 
-The utility geoip-gen reads csv files provided from GeoLite, and turns them into a 32-way branching b-tree, which is stored as ipfs json objects.
+### CIDs of the lookup dataset
 
-> 👉  **Note:** this library uses old type of ipfs json objects for legacy reasons,
-be mindful of that and do not use its code as an example.  Modern code should
-use [`dag-cbor`](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
-and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) or [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md) APIs.
+The current root hash for lookups is defined under `GEOIP_ROOT` in `src/lookup.js`.
+
+It is a proprietary b-tree generated from source files provided defined under `DATA_HASH` in `src/generate/index.js`.
+
+### Updating GeoLite2 dataset
 
 There is a generator included, that can be run with
 
@@ -96,7 +117,20 @@ $ npm run generate
 
 This takes quite a long time to import, but you only need to do it once when updating the global index used by the lookup feature.
 
-## Example
+It reads original GeoLite CSV files provided from `DATA_HASH` directory defined
+in `src/generate/index.js`, and turns them into a 32-way branching b-tree,
+which is stored as ipfs json objects.
+
+The produced CID should then be pinned and stored as the new `GEOIP_ROOT` in
+`src/lookup.js`
+
+> 👉  **Note:** this library uses old type of ipfs json objects for legacy reasons,
+be mindful of that and do not use its code as an example.  Modern code should
+use [`dag-cbor`](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
+and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) or [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md) APIs.
+
+
+## Testing in CLI
 
 You can find an example of how to use this in [`example/lookup.js`](example/lookup.js), which you can use like this:
 
@@ -115,9 +149,6 @@ Result: {
 Pretty result: New York, NY, USA, Earth
 ```
 
-## Root hash
-
-The current root hash for lookups is defined under `GEOIP_ROOT` in `src/lookup.js`
 
 ## Contribute
 
