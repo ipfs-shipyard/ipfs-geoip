@@ -34,11 +34,11 @@ describe('lookup', function () {
     ).to.be.eql({
       country_name: 'USA',
       country_code: 'US',
-      region_code: 'NY',
-      city: 'New York',
-      postal_code: '10004',
-      latitude: 40.7126,
-      longitude: -74.0066,
+      region_code: 'VA',
+      city: 'Ashburn',
+      postal_code: '20103',
+      latitude: 39.0019,
+      longitude: -77.4556,
       planet: 'Earth'
     })
   })
@@ -56,7 +56,7 @@ describe('lookup', function () {
       const result = await geoip.lookupPretty(ipfs, '/ip4/66.6.44.4')
       expect(
         result.formatted
-      ).to.be.eql('New York, NY, USA, Earth')
+      ).to.be.eql('Ashburn, VA, USA, Earth')
     })
   })
 
