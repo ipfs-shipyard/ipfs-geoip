@@ -8,7 +8,7 @@ const utf8Decoder = new TextDecoder('utf8')
 
 const formatData = require('./format')
 
-const GEOIP_ROOT = new CID('Qmbt1YbZAhMoqo7r1t6Y5EJrYGVRgcaisNAZhLeJY6ehfg') // GeoLite2-City-CSV_20201013
+const GEOIP_ROOT = new CID('QmQe6m4QRoKk4Q7gxGMkUfanmtC4zgw1cS4nAux75iZqG4') // GeoLite2-City-CSV_20220628
 
 /**
  * @param {Object} ipfs
