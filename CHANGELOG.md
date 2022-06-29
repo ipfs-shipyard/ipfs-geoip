@@ -1,3 +1,13 @@
+<a name="8.0.0"></a>
+# [8.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v7.0.0...v8.0.0) (2022-06-29)
+
+
+### Features
+
+* updated dataset (2022-06-28) ([#88](https://github.com/ipfs-shipyard/ipfs-geoip/issues/88)) ([a01488b](https://github.com/ipfs-shipyard/ipfs-geoip/commit/a01488b))
+
+
+
 <a name="7.0.0"></a>
 # [7.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v6.0.0...v7.0.0) (2021-03-29)
 
