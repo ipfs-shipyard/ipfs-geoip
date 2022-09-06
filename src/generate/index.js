@@ -1,7 +1,5 @@
-'use strict'
 
-import { default as Promise } from "bluebird"
-import { default as iconv } from "iconv-lite"
+import { default as Promise } from 'bluebird'
 import { parse } from 'csv-parse/sync'
 import * as dagCbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
@@ -62,14 +60,14 @@ async function parseLocations (locations, countries) {
     comment: '#'
   })
   const result = reduce(parsed, (acc, row) => {
-      acc[row.geoname_id] = [
-        countries[row.country_iso_code],
-        row.country_iso_code,
-        row.subdivision_1_iso_code,
-        normalizeName(row.city_name)
-      ]
-      return acc
-    }, {})
+    acc[row.geoname_id] = [
+      countries[row.country_iso_code],
+      row.country_iso_code,
+      row.subdivision_1_iso_code,
+      normalizeName(row.city_name)
+    ]
+    return acc
+  }, {})
   emit('locations', 'end')
   return result
 }
@@ -89,7 +87,7 @@ async function parseBlocks (blocks, locations) {
     const end = ip.toLong(lastAddress)
 
     const { geoname_id } = row // eslint-disable-line camelcase
-    const geonameData = locations[geoname_id]
+    const geonameData = locations[geoname_id] // eslint-disable-line camelcase
 
     // conform to legacy input format by filling up missing data the first time
     // a geoname is inspected
@@ -124,14 +122,16 @@ async function parseBlocks (blocks, locations) {
 
 async function putBlock (data, min, car) {
   let cid
-  try {
+  try { // eslint-disable-line no-useless-catch
     const bytes = dagCbor.encode(data)
     const hash = await sha256.digest(bytes)
     cid = CID.create(1, dagCbor.code, hash)
     await car.put({ cid, bytes })
   } catch (e) {
+    /*
     console.error('failed data')
     console.error(JSON.stringify(data, null, 2))
+    */
     throw e
   }
   emit('put', 'end')
@@ -183,7 +183,7 @@ async function main (ipfs, car) {
   const locations = await file(ipfs, locationsCsv)
   const countries = await parseCountries(locations)
   const locationsWithCountries = await parseLocations(locations, countries)
-  let blocks = await file(ipfs, blocksCsv)
+  const blocks = await file(ipfs, blocksCsv)
   let result = await parseBlocks(blocks, locationsWithCountries)
   emit('node', 'start', { length: result.length })
   result = await toNode(result, car)

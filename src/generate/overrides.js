@@ -1,5 +1,3 @@
-'use strict'
-
 // Source data is not perfect, below are manual overrides applied to geo names
 const overrides = new Map([
   // ['original', 'override']

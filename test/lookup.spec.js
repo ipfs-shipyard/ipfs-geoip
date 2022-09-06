@@ -1,4 +1,4 @@
-import { expect} from 'chai'
+import { expect } from 'chai'
 import * as geoip from '../src/index.js'
 import * as Ctl from 'ipfsd-ctl'
 import * as ipfsModule from 'ipfs'

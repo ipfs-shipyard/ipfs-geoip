@@ -2,14 +2,12 @@ import { default as memoize } from 'p-memoize'
 import ip from 'ip'
 import * as dagCbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
-import { TextDecoder } from 'web-encoding'
 import { formatData } from './format.js'
-const utf8Decoder = new TextDecoder('utf8')
 
 export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme').toString() // GeoLite2-City-CSV_20220628
 
 /**
- * @param {Object} ipfs
+ * @param {object} ipfs
  * @param {CID} cid
  * @param {string} lookfor - ip
  * @returns {Promise}
@@ -17,9 +15,9 @@ export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbeph
 async function _lookup (ipfs, cid, lookfor) {
   let obj
   try {
-    // TODO: move ipfs to the end, and if it is undefined, use  gateway at ipfs.io, add tests for js-ipfs, kubo, and gateway fallback
+    // TODO: if ipfs is undefined or null, use  gateway at ipfs.io, add tests for js-ipfs, kubo, and gateway fallback
     // TODO: if IPFS is a string, see if it is a valid URL, and if so, use it as a gateway
-    const block = await ipfs.block.get(cid)
+    const block = await ipfs.block.get(cid.toString())
     obj = await dagCbor.decode(block)
   } catch (e) {
     // log error, this makes things waaaay easier to fix in case API changes again
@@ -76,7 +74,7 @@ const memoizedLookup = memoize(_lookup, {
 })
 
 /**
- * @param {Object} ipfs
+ * @param {object} ipfs
  * @param {string} ipstring
  * @returns {Promise}
  */

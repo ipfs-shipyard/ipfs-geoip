@@ -1,7 +1,7 @@
 import { lookup } from './lookup.js'
 
 function isLocal (address) {
-  var split = address.split('.')
+  const split = address.split('.')
   if (split[0] === '10') return true
   if (split[0] === '127') return true
   if (split[0] === '192' && split[1] === '168') return true

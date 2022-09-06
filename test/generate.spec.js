@@ -1,15 +1,14 @@
 /* eslint-env mocha */
-'use strict'
 
-import { CID } from 'multiformats/cid'
-import * as multihash from 'multihashes'
+// import { CID } from 'multiformats/cid'
+// import * as multihash from 'multihashes'
 
 import * as chai from 'chai'
 import { default as asPromised } from 'chai-as-promised'
-chai.use(asPromised)
-const expect = chai.expect
 
 import { default as gen } from '../src/generate/index.js'
+chai.use(asPromised)
+const expect = chai.expect
 
 const locations = Buffer.from(`
 geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,subdivision_1_iso_code,subdivision_1_name,subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,time_zone,is_in_european_union
@@ -30,15 +29,6 @@ network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,
 213.195.159.0/24,765876,798544,,0,0,20-128,51.2574,22.5850,200
 2.56.139.0/24,5391959,2017370,,0,0,94119,37.7794,-122.4176,1000
 `)
-
-const enc = new TextEncoder()
-
-// identity multihash is useful for inlining data for use in tests
-const toIdentityCid = (val) => {
-  const bytes = enc.encode(val)
-  const mh = multihash.encode(bytes, 'identity')
-  return new CID(1, 'dag-pb', mh)
-}
 
 describe('generate', () => {
   it('parseCountries', () => {
@@ -177,6 +167,16 @@ describe('generate', () => {
   })
 
   /* TODO: test DAG-CBOR
+
+  const enc = new TextEncoder()
+
+  // identity multihash is useful for inlining data for use in tests
+  const toIdentityCid = (val) => {
+    const bytes = enc.encode(val)
+    const mh = multihash.encode(bytes, 'identity')
+    return new CID(1, 'dag-pb', mh)
+  }
+
   it('putObject', () => {
     const cid = toIdentityCid('myhash').toString()
     const api = {

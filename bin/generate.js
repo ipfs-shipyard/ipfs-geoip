@@ -17,7 +17,6 @@ function handleNoApi () {
   process.exit(1)
 }
 
-
 const carFilename = 'ipfs-geoip.car'
 const ipfs = create()
 

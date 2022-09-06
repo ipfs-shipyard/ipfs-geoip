@@ -1,5 +1,4 @@
 /* eslint-env mocha */
-'use strict'
 
 import { expect } from 'chai'
 import { formatData as format } from '../src/format.js'
