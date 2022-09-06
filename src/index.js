@@ -1,9 +1,7 @@
-'use strict'
+import { lookup } from './lookup.js'
+import { lookupPretty } from './pretty.js'
 
-const lookup = require('./lookup')
-const lookupPretty = require('./pretty')
-
-module.exports = {
-  lookup: lookup,
-  lookupPretty: lookupPretty
+export {
+  lookup,
+  lookupPretty
 }

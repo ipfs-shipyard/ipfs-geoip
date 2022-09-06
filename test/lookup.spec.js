@@ -1,10 +1,7 @@
-/* eslint-env mocha */
-'use strict'
-
-const expect = require('chai').expect
-const geoip = require('../src')
-
-const Ctl = require('ipfsd-ctl')
+import { expect} from 'chai'
+import * as geoip from '../src/index.js'
+import * as Ctl from 'ipfsd-ctl'
+import * as ipfsModule from 'ipfs'
 
 describe('lookup', function () {
   this.timeout(100 * 1000)
@@ -14,7 +11,7 @@ describe('lookup', function () {
   before(async () => {
     ipfsd = await Ctl.createController({
       type: 'proc',
-      ipfsModule: require('ipfs')
+      ipfsModule
     })
     ipfs = ipfsd.api
   })

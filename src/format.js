@@ -1,9 +1,7 @@
-'use strict'
-
 // TODO(dignifiedquire): Adjust for more planets
 const PLANET = 'Earth'
 
-module.exports = function formatData (data) {
+export function formatData (data) {
   return {
     country_name: data[0],
     country_code: data[1],

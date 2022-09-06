@@ -9,7 +9,7 @@
 [![](https://data.jsdelivr.com/v1/package/npm/ipfs-geoip/badge)](https://www.jsdelivr.com/package/npm/ipfs-geoip)
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/ipfs-geoip/badge.svg?branch=master)](https://coveralls.io/github/ipfs/ipfs-geoip?branch=master)
 
-> geoip lookup over ipfs
+> GeoIP lookup over IPFS
 
 
 # Table of Contents
@@ -46,7 +46,7 @@ Instead of a local installation (and browserification) you may request a [remote
 
 ```html
 <!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@8.0.0/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip/dist/index.min.js"></script>
 ```
 
 When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
@@ -118,16 +118,17 @@ $ npm run generate
 This takes quite a long time to import, but you only need to do it once when updating the global index used by the lookup feature.
 
 It reads original GeoLite CSV files provided from `DATA_HASH` directory defined
-in `src/generate/index.js`, and turns them into a 32-way branching b-tree,
-which is stored as ipfs json objects.
+in `src/generate/index.js`, and turns them into a 32-way branching b-tree
+of [DAG-CBOR](https://ipld.io/specs/codecs/dag-cbor/spec/) objects.
 
-The produced CID should then be pinned and stored as the new `GEOIP_ROOT` in
-`src/lookup.js`
+The tree is saved as `ipfs-geoip.car` and the root CID is printed to the
+terminal. It should then be imported to IPFS and the root CID should be pinned
+in multiple locations,  and stored as the new `GEOIP_ROOT` in `src/lookup.js`
 
-> 👉  **Note:** this library uses old type of ipfs json objects for legacy reasons,
-be mindful of that and do not use its code as an example.  Modern code should
-use [`dag-cbor`](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
-and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) or [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md) APIs.
+> 👉 this library uses [`dag-cbor`](https://ipld.io/specs/codecs/dag-cbor/spec/)
+> and reads raw blocks via [`ipfs.block` RPC](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md),
+> but could be refactored to fetch blocks as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
+> from a regular [HTTP Gateway](https://docs.ipfs.tech/reference/http/gateway/).
 
 
 ## Testing in CLI

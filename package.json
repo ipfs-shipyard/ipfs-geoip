@@ -16,6 +16,7 @@
     "src",
     "dist"
   ],
+  "type": "module",
   "main": "src/index.js",
   "repository": {
     "type": "git",
@@ -31,25 +32,27 @@
     "generate": "bin/generate.js"
   },
   "dependencies": {
-    "cids": "^1.1.6",
-    "ip": "^1.1.5",
-    "it-concat": "^1.0.3",
-    "p-memoize": "^4.0.1",
-    "web-encoding": "^1.1.0"
+    "@ipld/dag-cbor": "^7.0.2",
+    "ip": "^1.1.8",
+    "it-concat": "^2.0.0",
+    "multiformats": "^9.7.1",
+    "p-memoize": "^7.1.0",
+    "web-encoding": "^1.1.5"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
+    "aegir": "^37.5.1",
     "bluebird": "^3.7.2",
-    "chai": "^4.3.4",
+    "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
-    "csv": "^5.4.0",
-    "gauge": "^3.0.0",
-    "iconv-lite": "~0.6.2",
-    "ipfs": "^0.54.4",
-    "ipfs-http-client": "^49.0.4",
-    "ipfsd-ctl": "^7.2.0",
-    "lodash": "^4.17.21",
-    "multihashes": "^4.0.2",
+    "csv-parse": "^5.3.0",
+    "gauge": "^4.0.4",
+    "iconv-jschardet": "^2.0.28",
+    "iconv-lite": "^0.6.3",
+    "ipfs": "^0.63.5",
+    "ipfs-http-client": "^57.0.3",
+    "ipfsd-ctl": "^12.0.0",
+    "lodash-es": "^4.17.21",
+    "multihashes": "^4.0.3",
     "pre-commit": "^1.2.2"
   },
   "browser": {
@@ -60,8 +63,11 @@
     "example": "example"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "aegir": {
+    "tsRepo": false
   },
   "pre-commit": [
     "lint"
