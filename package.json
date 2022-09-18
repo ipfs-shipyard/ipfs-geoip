@@ -24,11 +24,11 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "release": "aegir release --node",
-    "build": "aegir build --node",
-    "test": "aegir test --node",
-    "test:node": "aegir test --node --target node",
-    "test:browser": "aegir test --node --target browser",
+    "release": "aegir release",
+    "build": "aegir build",
+    "test": "aegir test",
+    "test:node": "aegir test --target node",
+    "test:browser": "aegir test --target browser",
     "generate": "bin/generate.js"
   },
   "dependencies": {
@@ -40,18 +40,18 @@
     "web-encoding": "^1.1.5"
   },
   "devDependencies": {
+    "@ipld/car": "^4.1.5",
     "aegir": "^37.5.3",
     "bluebird": "^3.7.2",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "csv-parse": "^5.3.0",
     "gauge": "^4.0.4",
-    "ipfs": "^0.63.5",
-    "ipfs-http-client": "^57.0.3",
-    "ipfsd-ctl": "^12.0.2",
+    "ipfs-http-client": "^58.0.0",
     "lodash-es": "^4.17.21",
     "multihashes": "^4.0.3",
-    "pre-commit": "^1.2.2"
+    "pre-commit": "^1.2.2",
+    "uint8arrays": "^3.1.0"
   },
   "browser": {
     "os": false,

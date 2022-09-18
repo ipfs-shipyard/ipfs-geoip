@@ -1,20 +1,11 @@
 import { expect } from 'chai'
 import * as geoip from '../src/index.js'
-import * as Ctl from 'ipfsd-ctl'
-import * as ipfsModule from 'ipfs'
+
+// Use public gateway for fetching dag-cbor blocks
+const ipfs = 'https://ipfs.io'
 
 describe('lookup', function () {
   this.timeout(100 * 1000)
-  let ipfs
-  let ipfsd
-
-  before(async () => {
-    ipfsd = await Ctl.createController({
-      type: 'proc',
-      ipfsModule
-    })
-    ipfs = ipfsd.api
-  })
 
   it('fails on 127.0.0.1', async () => {
     try {
@@ -55,9 +46,5 @@ describe('lookup', function () {
         result.formatted
       ).to.be.eql('Ashburn, VA, USA, Earth')
     })
-  })
-
-  after(async () => {
-    await ipfsd.stop()
   })
 })

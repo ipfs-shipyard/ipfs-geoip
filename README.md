@@ -54,14 +54,20 @@ When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.
 
 ## Usage
 
+### With a public gateway (default)
+
+If `ipfs` is `undefined` or a string with gateway URL, it will be used for
+fetching data as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
+and parsing it as DAG-CBOR locally:
+
 ```js
 const geoip = require('ipfs-geoip')
-const ipfs = require('ipfs-http-client')()
-
 const exampleIp = '66.6.44.4'
 
+const ipfsGateway = 'https://ipfs.io'
+
 try {
-  const result = await geoip.lookup(ipfs, exampleIp)
+  const result = await geoip.lookup(ipfsGateway, exampleIp)
   console.log('Result: ', result)
 } catch (err) {
   console.log('Error: ' + err)
@@ -74,6 +80,26 @@ try {
   console.log('Error: ' + err)
 }
 ```
+
+### With JS-IPFS or Kubo RPC
+
+It is also possible to use it with local or remote IPFS node that exposes
+[`ipfs.block.get` Core JS API](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md#ipfsblockgetcid-options):
+
+```js
+const geoip = require('ipfs-geoip')
+const exampleIp = '66.6.44.4'
+
+const ipfsApi = require('ipfs-http-client')()
+
+try {
+  const result = await geoip.lookup(ipfsApi, exampleIp)
+  console.log('Result: ', result)
+} catch (err) {
+  console.log('Error: ' + err)
+}
+```
+
 
 ## API
 

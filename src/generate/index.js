@@ -1,6 +1,6 @@
 
 import { default as Promise } from 'bluebird'
-import { parse } from 'csv-parse/sync'
+import { parse } from 'csv-parse/browser/esm/sync'
 import * as dagCbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
@@ -149,7 +149,7 @@ function createLeaf (data) {
 function createNode (data) {
   return {
     mins: data.map((x) => x.min),
-    links: data.map((x) => CID.asCID(x.cid)) // CID instance is turned into DAG-CBOR links
+    links: data.map((x) => CID.asCID(x.cid)).filter(cid => cid) // valid CID instances are turned into DAG-CBOR links
   }
 }
 
@@ -189,36 +189,6 @@ async function main (ipfs, car) {
   result = await toNode(result, car)
   emit('node', 'end')
   return result.cid
-  /*
-  return file(ipfs, locationsCsv)
-    .then(parseCountries)
-    .then((countries) => Promise.join(
-      file(ipfs, locationsCsv),
-      countries,
-      parseLocations
-    ))
-    .then((locations) => Promise.join(
-      file(ipfs, blocksCsv),
-      locations,
-      parseBlocks
-    ))
-    .then((result) => {
-      emit('node', 'start', {
-        length: result.length
-      })
-
-      return toNode(result, ipfs)
-    })
-    .then((result) => {
-      emit('node', 'end')
-      emit('pinning', 'start')
-      return ipfs.pin.add(result.hash, { recursive: true })
-    })
-    .then((result) => {
-      emit('pinning', 'end')
-      return result[0].cid.toString()
-    })
-    */
 }
 
 export default {

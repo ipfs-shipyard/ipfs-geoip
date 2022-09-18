@@ -4,10 +4,33 @@ import * as dagCbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
 import { formatData } from './format.js'
 
-export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme').toString() // GeoLite2-City-CSV_20220628
+export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme') // GeoLite2-City-CSV_20220628
+
+const defaultGateway = 'https://ipfs.io'
 
 /**
- * @param {object} ipfs
+ * @param {object|string} ipfs
+ * @param {CID} cid
+ * @returns {Promise}
+ */
+async function getRawBlock (ipfs, cid) {
+  // normalize to string
+  let gwUrl
+  try {
+    gwUrl = new URL(ipfs || defaultGateway)
+    gwUrl.pathname = `/ipfs/${cid.toString()}`
+    gwUrl.search = '?format=raw'
+    const rawBlock = await fetch(gwUrl, { cache: 'force-cache' })
+    return new Uint8Array(await rawBlock.arrayBuffer())
+  } catch (_) {
+    // not a gateway URL, fallbck to using it as Core JS API
+    // (this is backward-compatibility for legacy users)
+    return await ipfs.block.get(cid)
+  }
+}
+
+/**
+ * @param {object|string} ipfs
  * @param {CID} cid
  * @param {string} lookfor - ip
  * @returns {Promise}
@@ -15,9 +38,7 @@ export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbeph
 async function _lookup (ipfs, cid, lookfor) {
   let obj
   try {
-    // TODO: if ipfs is undefined or null, use  gateway at ipfs.io, add tests for js-ipfs, kubo, and gateway fallback
-    // TODO: if IPFS is a string, see if it is a valid URL, and if so, use it as a gateway
-    const block = await ipfs.block.get(cid.toString())
+    const block = await getRawBlock(ipfs, cid)
     obj = await dagCbor.decode(block)
   } catch (e) {
     // log error, this makes things waaaay easier to fix in case API changes again
@@ -27,7 +48,7 @@ async function _lookup (ipfs, cid, lookfor) {
 
   let child = 0
 
-  if (typeof obj.data === 'undefined') { // regular node
+  if (!('data' in obj)) { // regular node
     while (obj.mins[child] && obj.mins[child] <= lookfor) {
       child++
     }
@@ -45,7 +66,7 @@ async function _lookup (ipfs, cid, lookfor) {
     }
 
     return memoizedLookup(ipfs, nextCid, lookfor)
-  } else if (typeof obj.data !== 'undefined') { // leaf node
+  } else if ('data' in obj) { // leaf node
     while (obj.data[child] && obj.data[child].min <= lookfor) {
       child++
     }

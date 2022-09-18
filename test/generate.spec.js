@@ -1,16 +1,14 @@
 /* eslint-env mocha */
 
-// import { CID } from 'multiformats/cid'
-// import * as multihash from 'multihashes'
-
 import * as chai from 'chai'
 import { default as asPromised } from 'chai-as-promised'
+import { fromString } from 'uint8arrays/from-string'
 
 import { default as gen } from '../src/generate/index.js'
 chai.use(asPromised)
 const expect = chai.expect
 
-const locations = Buffer.from(`
+const locations = fromString(`
 geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,subdivision_1_iso_code,subdivision_1_name,subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,time_zone,is_in_european_union
 3039163,en,EU,Europe,AD,Andorra,06,"Sant Julià de Loria",,,"Sant Julià de Lòria",,Europe/Andorra,0
 12042053,en,AS,Asia,AE,"United Arab Emirates",AZ,"Abu Dhabi",,,"Musaffah City",,Asia/Dubai,0
@@ -22,7 +20,7 @@ geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_na
 // however now we read data from the same CSV as locations
 const countries = locations
 
-const blocks = Buffer.from(`
+const blocks = fromString(`
 network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider,postal_code,latitude,longitude,accuracy_radius
 194.158.92.192/26,3039163,3041565,,0,0,,42.4678,1.5005,100
 94.59.56.0/24,12042053,290557,,0,0,,24.3613,54.4803,20
@@ -165,57 +163,4 @@ describe('generate', () => {
       }
     ])
   })
-
-  /* TODO: test DAG-CBOR
-
-  const enc = new TextEncoder()
-
-  // identity multihash is useful for inlining data for use in tests
-  const toIdentityCid = (val) => {
-    const bytes = enc.encode(val)
-    const mh = multihash.encode(bytes, 'identity')
-    return new CID(1, 'dag-pb', mh)
-  }
-
-  it('putObject', () => {
-    const cid = toIdentityCid('myhash').toString()
-    const api = {
-      object: {
-        put: () => Promise.resolve(new CID(cid)),
-        stat: (hash) => Promise.resolve({ CumulativeSize: 5 })
-      }
-    }
-
-    return expect(
-      gen.putObject(['hello'], 3, api)
-    ).to.eventually.be.eql({
-      min: 3,
-      size: 5,
-      hash: cid
-    })
-  })
-
-  it('toNode', () => {
-    const api = {
-      object: {
-        put: (val) => Promise.resolve(toIdentityCid('myhash' + val.length)),
-        stat: (hash) => Promise.resolve({ CumulativeSize: hash.toString().length })
-      }
-    }
-
-    return expect(
-      gen.toNode([{
-        min: 1,
-        data: 0
-      }, {
-        min: 16777216,
-        data: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', '']
-      }], api)
-    ).to.eventually.be.eql({
-      min: 1,
-      size: 22,
-      hash: toIdentityCid('myhash147').toString()
-    })
-  })
-  */
 })
