@@ -2,11 +2,12 @@ import { default as memoize } from 'p-memoize'
 import ip from 'ip'
 import * as dagCbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
+import fetch from 'cross-fetch'
 import { formatData } from './format.js'
 
 export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme') // GeoLite2-City-CSV_20220628
 
-const defaultGateway = 'https://ipfs.io'
+const defaultGateway = ['https://ipfs.io', 'https://dweb.link']
 
 /**
  * @param {object|string} ipfs
@@ -14,18 +15,27 @@ const defaultGateway = 'https://ipfs.io'
  * @returns {Promise}
  */
 async function getRawBlock (ipfs, cid) {
-  // normalize to string
-  let gwUrl
-  try {
-    gwUrl = new URL(ipfs || defaultGateway)
+  if (typeof ipfs === 'function') {
+    return ipfs(cid)
+  }
+  if (typeof ipfs?.block?.get === 'function') {
+    // use Core JS API (https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md)
+    return ipfs.block.get(cid)
+  }
+
+  // Assume ipfs is gateway url or a list of gateway urls to try in order
+  const gateways = Array.isArray(ipfs) ? ipfs : [ipfs]
+  for (const url of gateways) { // eslint-disable-line no-unreachable-loop
+    const gwUrl = new URL(url)
     gwUrl.pathname = `/ipfs/${cid.toString()}`
     gwUrl.search = '?format=raw'
-    const rawBlock = await fetch(gwUrl, { cache: 'force-cache' })
-    return new Uint8Array(await rawBlock.arrayBuffer())
-  } catch (_) {
-    // not a gateway URL, fallbck to using it as Core JS API
-    // (this is backward-compatibility for legacy users)
-    return await ipfs.block.get(cid)
+    try {
+      const res = await fetch(gwUrl, { cache: 'force-cache' })
+      if (!res.ok) throw res
+      return new Uint8Array(await res.arrayBuffer())
+    } catch (cause) {
+      throw new Error(`unable to fetch raw block for CID ${cid}`, { cause })
+    }
   }
 }
 
@@ -104,7 +114,7 @@ const memoizedLookup = memoize(_lookup, {
  * @param {string} ipstring
  * @returns {Promise}
  */
-export function lookup (ipfs, ipstring) {
+export function lookup (ipfs = defaultGateway, ipstring) {
   return memoizedLookup(ipfs, GEOIP_ROOT, ip.toLong(ipstring))
 }
 

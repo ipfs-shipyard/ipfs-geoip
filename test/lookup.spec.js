@@ -1,11 +1,10 @@
 import { expect } from 'chai'
 import * as geoip from '../src/index.js'
 
-// Use public gateway for fetching dag-cbor blocks
-const ipfs = 'https://ipfs.io'
-
-describe('lookup', function () {
+describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
   this.timeout(100 * 1000)
+
+  const ipfs = process.env.CI ? 'https://ipfs.io' : 'http://127.0.0.1:8080'
 
   it('fails on 127.0.0.1', async () => {
     try {
