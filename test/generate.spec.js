@@ -3,6 +3,7 @@
 import * as chai from 'chai'
 import { default as asPromised } from 'chai-as-promised'
 import { fromString } from 'uint8arrays/from-string'
+import { parse } from 'csv-parse/browser/esm/sync'
 
 import { default as gen } from '../src/generate/index.js'
 chai.use(asPromised)
@@ -31,7 +32,7 @@ network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,
 describe('generate', () => {
   it('parseCountries', () => {
     return expect(
-      gen.parseCountries(countries)
+      gen.parseCountries(parse, countries)
     ).to.eventually.be.eql({
       AD: 'Andorra',
       AE: 'United Arab Emirates',
@@ -42,7 +43,7 @@ describe('generate', () => {
 
   it('parseLocations', () => {
     return expect(
-      gen.parseLocations(locations, {
+      gen.parseLocations(parse, locations, {
         AD: 'Andorra',
         AE: 'United Arab Emirates',
         PL: 'Poland',
@@ -78,7 +79,7 @@ describe('generate', () => {
 
   it('parseBlocks', () => {
     return expect(
-      gen.parseBlocks(blocks, {
+      gen.parseBlocks(parse, blocks, {
         765876: [
           'Poland',
           'PL',

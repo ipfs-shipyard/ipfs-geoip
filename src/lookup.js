@@ -36,13 +36,18 @@ async function getRawBlock (ipfs, cid) {
  * @returns {Promise}
  */
 async function _lookup (ipfs, cid, lookfor) {
-  let obj
+  let obj, block
   try {
-    const block = await getRawBlock(ipfs, cid)
+    block = await getRawBlock(ipfs, cid)
     obj = await dagCbor.decode(block)
   } catch (e) {
-    // log error, this makes things waaaay easier to fix in case API changes again
-    console.error(`[ipfs-geoip] failed to get and parse DAG-CBOR for CID '${cid}'`, e) // eslint-disable-line no-console
+    if (process?.env?.DEBUG || process?.env?.TEST) {
+      if (!block) {
+        console.error(`[ipfs-geoip] failed to get raw block for CID '${cid}'`, e) // eslint-disable-line no-console
+      } else {
+        console.error(`[ipfs-geoip] failed to parse DAG-CBOR behind CID '${cid}'`, e) // eslint-disable-line no-console
+      }
+    }
     throw e
   }
 

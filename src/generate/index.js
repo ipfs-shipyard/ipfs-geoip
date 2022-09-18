@@ -1,6 +1,5 @@
 
 import { default as Promise } from 'bluebird'
-import { parse } from 'csv-parse/browser/esm/sync'
 import * as dagCbor from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
@@ -34,7 +33,7 @@ function emit (type, status, attrs) {
   }, attrs))
 }
 
-async function parseCountries (locations) {
+async function parseCountries (parse, locations) {
   emit('countries', 'start')
   const parsed = parse(locations, {
     columns: true,
@@ -51,7 +50,7 @@ async function parseCountries (locations) {
   return result
 }
 
-async function parseLocations (locations, countries) {
+async function parseLocations (parse, locations, countries) {
   emit('locations', 'start')
   const parsed = parse(locations, {
     columns: true,
@@ -72,7 +71,7 @@ async function parseLocations (locations, countries) {
   return result
 }
 
-async function parseBlocks (blocks, locations) {
+async function parseBlocks (parse, blocks, locations) {
   emit('blocks', 'start')
   const parsed = parse(blocks, {
     columns: true,
@@ -180,11 +179,12 @@ async function file (ipfs, dir) {
 }
 
 async function main (ipfs, car) {
+  const { parse } = await import(process.browser ? 'csv-parse/browser/esm/sync' : 'csv-parse/sync')
   const locations = await file(ipfs, locationsCsv)
-  const countries = await parseCountries(locations)
-  const locationsWithCountries = await parseLocations(locations, countries)
+  const countries = await parseCountries(parse, locations)
+  const locationsWithCountries = await parseLocations(parse, locations, countries)
   const blocks = await file(ipfs, blocksCsv)
-  let result = await parseBlocks(blocks, locationsWithCountries)
+  let result = await parseBlocks(parse, blocks, locationsWithCountries)
   emit('node', 'start', { length: result.length })
   result = await toNode(result, car)
   emit('node', 'end')

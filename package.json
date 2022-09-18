@@ -29,15 +29,14 @@
     "test": "aegir test",
     "test:node": "aegir test --target node",
     "test:browser": "aegir test --target browser",
-    "generate": "bin/generate.js"
+    "generate": "node bin/generate.js"
   },
   "dependencies": {
     "@ipld/dag-cbor": "^7.0.3",
     "ip": "^1.1.8",
     "it-concat": "^2.0.0",
     "multiformats": "^9.8.1",
-    "p-memoize": "^7.1.0",
-    "web-encoding": "^1.1.5"
+    "p-memoize": "^7.1.0"
   },
   "devDependencies": {
     "@ipld/car": "^4.1.5",
@@ -55,13 +54,13 @@
   },
   "browser": {
     "os": false,
-    "util": "web-encoding"
+    "process/browser": true
   },
   "directories": {
     "example": "example"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=16.0.0",
     "npm": ">=8.0.0"
   },
   "aegir": {
