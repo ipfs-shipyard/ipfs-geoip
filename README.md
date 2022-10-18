@@ -159,9 +159,16 @@ in multiple locations,  and stored as the new `GEOIP_ROOT` in `src/lookup.js`
 
 ## Testing in CLI
 
+It is possible to run tests against a local gateway by passing `IPFS_GATEWAY`:
+
+```console
+$ IPFS_GATEWAY="http://127.0.0.1:8080" npm test
+```
+
 You can find an example of how to use this in [`example/lookup.js`](example/lookup.js), which you can use like this:
 
 ```bash
+$ export IPFS_GATEWAY="http://127.0.0.1:8080"
 $ node example/lookup.js 66.6.44.4
 Result: {
   "country_name": "USA",
