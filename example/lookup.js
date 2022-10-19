@@ -1,5 +1,4 @@
 import * as geoip from '../src/index.js'
-import { create } from 'ipfs-http-client'
 
 const ipfsGw = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
 
