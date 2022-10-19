@@ -1,9 +1,10 @@
 import { default as memoize } from 'p-memoize'
 import ip from 'ip'
-import * as dagCbor from '@ipld/dag-cbor'
+import { decode as dagCborDecode } from '@ipld/dag-cbor'
 import { CID } from 'multiformats/cid'
 import fetch from 'cross-fetch'
 import { formatData } from './format.js'
+import { MAX_LOOKUP_RETRIES } from './constants.js'
 
 export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme') // GeoLite2-City-CSV_20220628
 
@@ -40,6 +41,28 @@ async function getRawBlock (ipfs, cid) {
 }
 
 /**
+ * Gets Obj and Block after retrying multiple times.
+ *
+ * @param {object|string} ipfs
+ * @param {CID} cid
+ * @param {number} numTry - this will be 1 for the first try and recurse till MAX_LOOKUP_RETRIES is reached.
+ * @returns {Promise<{obj, block}>}
+ */
+async function getObjAndBlockWithRetries (ipfs, cid, numTry = 1) {
+  try {
+    const block = await getRawBlock(ipfs, cid)
+    const obj = await dagCborDecode(block)
+    return { obj, block }
+  } catch (e) {
+    if (numTry < MAX_LOOKUP_RETRIES) {
+      return await getObjAndBlockWithRetries(ipfs, cid, numTry + 1)
+    } else {
+      throw e
+    }
+  }
+}
+
+/**
  * @param {object|string} ipfs
  * @param {CID} cid
  * @param {string} lookfor - ip
@@ -48,8 +71,7 @@ async function getRawBlock (ipfs, cid) {
 async function _lookup (ipfs, cid, lookfor) {
   let obj, block
   try {
-    block = await getRawBlock(ipfs, cid)
-    obj = await dagCbor.decode(block)
+    ({ obj, block } = await getObjAndBlockWithRetries(ipfs, cid))
   } catch (e) {
     if (process?.env?.DEBUG || process?.env?.TEST) {
       if (!block) {

@@ -1,4 +1,7 @@
 import { expect } from 'chai'
+import esmock from 'esmock'
+import { decode as dagCborDecode } from '@ipld/dag-cbor'
+
 import * as geoip from '../src/index.js'
 
 describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
@@ -28,6 +31,25 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
       longitude: -77.4556,
       planet: 'Earth'
     })
+  })
+
+  it('looks up multiple times before failing', async () => {
+    let decodeCallCount = 0
+    const rewiredGeoIp = await esmock('../src/index.js', {}, {
+      '@ipld/dag-cbor': {
+        decode: (...args) => {
+          decodeCallCount += 1
+          if (decodeCallCount === 1) {
+            return Promise.reject(new Error('Decode Failed'))
+          }
+          if (decodeCallCount === 2) {
+            return dagCborDecode(...args)
+          }
+        }
+      }
+    })
+
+    await rewiredGeoIp.lookup(ipfsGW, '66.6.44.4')
   })
 
   describe('lookupPretty', () => {
