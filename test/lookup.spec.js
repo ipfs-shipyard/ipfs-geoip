@@ -24,9 +24,9 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
       country_code: 'US',
       region_code: 'VA',
       city: 'Ashburn',
-      postal_code: '20103',
-      latitude: 39.0019,
-      longitude: -77.4556,
+      postal_code: '20149',
+      latitude: 39.0469,
+      longitude: -77.4903,
       planet: 'Earth'
     })
   })
