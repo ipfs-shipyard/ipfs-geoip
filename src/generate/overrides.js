@@ -1,5 +1,3 @@
-'use strict'
-
 // Source data is not perfect, below are manual overrides applied to geo names
 const overrides = new Map([
   // ['original', 'override']
@@ -43,7 +41,7 @@ const overrides = new Map([
   ['Wallis And Futuna', 'Wallis and Futuna']
 ])
 
-module.exports = function normalizeName (name) {
+export default function normalizeName (name) {
   if (overrides.has(name)) return overrides.get(name)
   return name
 }

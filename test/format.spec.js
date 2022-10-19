@@ -1,9 +1,7 @@
 /* eslint-env mocha */
-'use strict'
 
-const expect = require('chai').expect
-
-const format = require('../src/format')
+import { expect } from 'chai'
+import { formatData as format } from '../src/format.js'
 
 describe('format', () => {
   it('formats with all details present', () => {

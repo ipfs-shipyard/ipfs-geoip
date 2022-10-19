@@ -16,6 +16,7 @@
     "src",
     "dist"
   ],
+  "type": "module",
   "main": "src/index.js",
   "repository": {
     "type": "git",
@@ -23,45 +24,48 @@
   },
   "scripts": {
     "lint": "aegir lint",
-    "release": "aegir release --node",
-    "build": "aegir build --node",
-    "test": "aegir test --node",
-    "test:node": "aegir test --node --target node",
-    "test:browser": "aegir test --node --target browser",
-    "generate": "bin/generate.js"
+    "release": "aegir release",
+    "build": "aegir build",
+    "test": "aegir test",
+    "test:node": "aegir test --target node",
+    "test:browser": "aegir test --target browser",
+    "generate": "node bin/generate.js"
   },
   "dependencies": {
-    "cids": "^1.1.6",
-    "ip": "^1.1.5",
-    "it-concat": "^1.0.3",
-    "p-memoize": "^4.0.1",
-    "web-encoding": "^1.1.0"
+    "@ipld/dag-cbor": "^7.0.3",
+    "bluebird": "^3.7.2",
+    "cross-fetch": "^3.1.5",
+    "ip": "^2.0.0",
+    "it-concat": "^2.0.0",
+    "lodash-es": "^4.17.21",
+    "multiformats": "^9.9.0",
+    "p-memoize": "^7.1.0"
   },
   "devDependencies": {
-    "aegir": "^26.0.0",
-    "bluebird": "^3.7.2",
-    "chai": "^4.3.4",
+    "@ipld/car": "^4.1.5",
+    "aegir": "^37.5.4",
+    "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
-    "csv": "^5.4.0",
-    "gauge": "^3.0.0",
-    "iconv-lite": "~0.6.2",
-    "ipfs": "^0.54.4",
-    "ipfs-http-client": "^49.0.4",
-    "ipfsd-ctl": "^7.2.0",
-    "lodash": "^4.17.21",
-    "multihashes": "^4.0.2",
-    "pre-commit": "^1.2.2"
+    "csv-parse": "^5.3.0",
+    "gauge": "^4.0.4",
+    "ipfs-http-client": "^58.0.1",
+    "multihashes": "^4.0.3",
+    "pre-commit": "^1.2.2",
+    "uint8arrays": "^3.1.0"
   },
   "browser": {
     "os": false,
-    "util": "web-encoding"
+    "process/browser": true
   },
   "directories": {
     "example": "example"
   },
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "aegir": {
+    "tsRepo": false
   },
   "pre-commit": [
     "lint"

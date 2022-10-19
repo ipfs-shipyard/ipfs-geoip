@@ -9,7 +9,7 @@
 [![](https://data.jsdelivr.com/v1/package/npm/ipfs-geoip/badge)](https://www.jsdelivr.com/package/npm/ipfs-geoip)
 [![Coverage Status](https://coveralls.io/repos/github/ipfs/ipfs-geoip/badge.svg?branch=master)](https://coveralls.io/github/ipfs/ipfs-geoip?branch=master)
 
-> geoip lookup over ipfs
+> GeoIP lookup over IPFS
 
 
 # Table of Contents
@@ -46,7 +46,7 @@ Instead of a local installation (and browserification) you may request a [remote
 
 ```html
 <!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@8.0.0/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip/dist/index.min.js"></script>
 ```
 
 When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
@@ -54,22 +54,48 @@ When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.
 
 ## Usage
 
+### With public gateways (default)
+
+If `ipfs` is a string or array of strings with public gateway URLs, it will be used for
+fetching IPFS blocks as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
+and parsing them as DAG-CBOR locally:
+
 ```js
 const geoip = require('ipfs-geoip')
-const ipfs = require('ipfs-http-client')()
-
 const exampleIp = '66.6.44.4'
 
+const ipfsGw = ['https://ipfs.io', 'https://dweb.link']
+
 try {
-  const result = await geoip.lookup(ipfs, exampleIp)
+  const result = await geoip.lookup(ipfsGw, exampleIp)
   console.log('Result: ', result)
 } catch (err) {
   console.log('Error: ' + err)
 }
 
 try {
-  const result = await geoip.lookupPretty(ipfs, '/ip4/' + exampleIp)
+  const result = await geoip.lookupPretty(ipfsGw, '/ip4/' + exampleIp)
   console.log('Pretty result: %s', result.formatted)
+} catch (err) {
+  console.log('Error: ' + err)
+}
+```
+
+### With custom block getter function
+
+It is also possible to use it with local or remote IPFS node by passing block getter function, e.g., one that exposes
+[`ipfs.block.get` Core JS API](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md#ipfsblockgetcid-options):
+
+```js
+const geoip = require('ipfs-geoip')
+const exampleIp = '66.6.44.4'
+
+const ipfs = require('ipfs-http-client')()
+
+try {
+  const getBlock = (cid) => ipfs.block.get(cid)
+  const result = await geoip.lookup(getBlock, exampleIp)
+  console.log('Result: ', result)
 } catch (err) {
   console.log('Error: ' + err)
 }
@@ -118,23 +144,31 @@ $ npm run generate
 This takes quite a long time to import, but you only need to do it once when updating the global index used by the lookup feature.
 
 It reads original GeoLite CSV files provided from `DATA_HASH` directory defined
-in `src/generate/index.js`, and turns them into a 32-way branching b-tree,
-which is stored as ipfs json objects.
+in `src/generate/index.js`, and turns them into a 32-way branching b-tree
+of [DAG-CBOR](https://ipld.io/specs/codecs/dag-cbor/spec/) objects.
 
-The produced CID should then be pinned and stored as the new `GEOIP_ROOT` in
-`src/lookup.js`
+The tree is saved as `ipfs-geoip.car` and the root CID is printed to the
+terminal. It should then be imported to IPFS and the root CID should be pinned
+in multiple locations,  and stored as the new `GEOIP_ROOT` in `src/lookup.js`
 
-> 👉  **Note:** this library uses old type of ipfs json objects for legacy reasons,
-be mindful of that and do not use its code as an example.  Modern code should
-use [`dag-cbor`](https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-cbor.md)
-and [`ipfs.dag`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/DAG.md) or [`ipfs.block`](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md) APIs.
+> 👉 this library uses [`dag-cbor`](https://ipld.io/specs/codecs/dag-cbor/spec/)
+> and reads raw blocks via [`ipfs.block` RPC](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md),
+> but could be refactored to fetch blocks as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
+> from a regular [HTTP Gateway](https://docs.ipfs.tech/reference/http/gateway/).
 
 
 ## Testing in CLI
 
+It is possible to run tests against a local gateway by passing `IPFS_GATEWAY`:
+
+```console
+$ IPFS_GATEWAY="http://127.0.0.1:8080" npm test
+```
+
 You can find an example of how to use this in [`example/lookup.js`](example/lookup.js), which you can use like this:
 
 ```bash
+$ export IPFS_GATEWAY="http://127.0.0.1:8080"
 $ node example/lookup.js 66.6.44.4
 Result: {
   "country_name": "USA",

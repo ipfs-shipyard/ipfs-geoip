@@ -1,46 +1,74 @@
-'use strict'
+import { default as memoize } from 'p-memoize'
+import ip from 'ip'
+import * as dagCbor from '@ipld/dag-cbor'
+import { CID } from 'multiformats/cid'
+import fetch from 'cross-fetch'
+import { formatData } from './format.js'
 
-const memoize = require('p-memoize')
-const ip = require('ip')
-const CID = require('cids')
-const { TextDecoder } = require('web-encoding')
-const utf8Decoder = new TextDecoder('utf8')
+export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme') // GeoLite2-City-CSV_20220628
 
-const formatData = require('./format')
-
-const GEOIP_ROOT = new CID('QmQe6m4QRoKk4Q7gxGMkUfanmtC4zgw1cS4nAux75iZqG4') // GeoLite2-City-CSV_20220628
+const defaultGateway = ['https://ipfs.io', 'https://dweb.link']
 
 /**
- * @param {Object} ipfs
+ * @param {object|string} ipfs
+ * @param {CID} cid
+ * @returns {Promise}
+ */
+async function getRawBlock (ipfs, cid) {
+  if (typeof ipfs === 'function') {
+    return ipfs(cid)
+  }
+  if (typeof ipfs?.block?.get === 'function') {
+    // use Core JS API (https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md)
+    return ipfs.block.get(cid)
+  }
+
+  // Assume ipfs is gateway url or a list of gateway urls to try in order
+  const gateways = Array.isArray(ipfs) ? ipfs : [ipfs]
+  for (const url of gateways) { // eslint-disable-line no-unreachable-loop
+    const gwUrl = new URL(url)
+    gwUrl.pathname = `/ipfs/${cid.toString()}`
+    gwUrl.search = '?format=raw'
+    try {
+      const res = await fetch(gwUrl, { cache: 'force-cache' })
+      if (!res.ok) throw res
+      return new Uint8Array(await res.arrayBuffer())
+    } catch (cause) {
+      throw new Error(`unable to fetch raw block for CID ${cid}`, { cause })
+    }
+  }
+}
+
+/**
+ * @param {object|string} ipfs
  * @param {CID} cid
  * @param {string} lookfor - ip
  * @returns {Promise}
  */
 async function _lookup (ipfs, cid, lookfor) {
-  // ensure input is a valid cid, but switch to string representation
-  // to avoid serialization issues when mix of cids >1.0 and <1.0 are used
-  cid = new CID(cid).toString()
-
-  // TODO: use dag-cbor instead of stringified JSON
-  let res
-  let obj
+  let obj, block
   try {
-    res = await ipfs.object.get(cid)
-    obj = JSON.parse(utf8Decoder.decode(res.Data))
+    block = await getRawBlock(ipfs, cid)
+    obj = await dagCbor.decode(block)
   } catch (e) {
-    // log error, this makes things waaaay easier to fix in case API changes again
-    console.error(`[ipfs-geoip] failed to get and parse Data via ipfs.object.get('${cid}')`, e) // eslint-disable-line no-console
+    if (process?.env?.DEBUG || process?.env?.TEST) {
+      if (!block) {
+        console.error(`[ipfs-geoip] failed to get raw block for CID '${cid}'`, e) // eslint-disable-line no-console
+      } else {
+        console.error(`[ipfs-geoip] failed to parse DAG-CBOR behind CID '${cid}'`, e) // eslint-disable-line no-console
+      }
+    }
     throw e
   }
 
   let child = 0
 
-  if (obj.type === 'Node') {
+  if (!('data' in obj)) { // regular node
     while (obj.mins[child] && obj.mins[child] <= lookfor) {
       child++
     }
 
-    const next = res.Links[child - 1]
+    const next = obj.links[child - 1]
 
     if (!next) {
       throw new Error('Failed to lookup node')
@@ -53,7 +81,7 @@ async function _lookup (ipfs, cid, lookfor) {
     }
 
     return memoizedLookup(ipfs, nextCid, lookfor)
-  } else if (obj.type === 'Leaf') {
+  } else if ('data' in obj) { // leaf node
     while (obj.data[child] && obj.data[child].min <= lookfor) {
       child++
     }
@@ -82,16 +110,15 @@ const memoizedLookup = memoize(_lookup, {
 })
 
 /**
- * @param {Object} ipfs
+ * @param {object} ipfs
  * @param {string} ipstring
  * @returns {Promise}
  */
-module.exports = function lookup (ipfs, ipstring) {
+export function lookup (ipfs = defaultGateway, ipstring) {
   return memoizedLookup(ipfs, GEOIP_ROOT, ip.toLong(ipstring))
 }
 
 function getCid (node) {
   if (!node) return null
-  if (node.Hash) return node.Hash
-  return null
+  return CID.asCID(node)
 }

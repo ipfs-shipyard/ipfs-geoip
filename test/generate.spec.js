@@ -1,17 +1,15 @@
 /* eslint-env mocha */
-'use strict'
 
-const CID = require('cids')
-const multihash = require('multihashes')
+import * as chai from 'chai'
+import { default as asPromised } from 'chai-as-promised'
+import { fromString } from 'uint8arrays/from-string'
+import { parse } from 'csv-parse/browser/esm/sync'
 
-const chai = require('chai')
-const asPromised = require('chai-as-promised')
+import { default as gen } from '../src/generate/index.js'
 chai.use(asPromised)
 const expect = chai.expect
 
-const gen = require('../src/generate/')
-
-const locations = Buffer.from(`
+const locations = fromString(`
 geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_name,subdivision_1_iso_code,subdivision_1_name,subdivision_2_iso_code,subdivision_2_name,city_name,metro_code,time_zone,is_in_european_union
 3039163,en,EU,Europe,AD,Andorra,06,"Sant Julià de Loria",,,"Sant Julià de Lòria",,Europe/Andorra,0
 12042053,en,AS,Asia,AE,"United Arab Emirates",AZ,"Abu Dhabi",,,"Musaffah City",,Asia/Dubai,0
@@ -23,7 +21,7 @@ geoname_id,locale_code,continent_code,continent_name,country_iso_code,country_na
 // however now we read data from the same CSV as locations
 const countries = locations
 
-const blocks = Buffer.from(`
+const blocks = fromString(`
 network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,is_anonymous_proxy,is_satellite_provider,postal_code,latitude,longitude,accuracy_radius
 194.158.92.192/26,3039163,3041565,,0,0,,42.4678,1.5005,100
 94.59.56.0/24,12042053,290557,,0,0,,24.3613,54.4803,20
@@ -31,19 +29,10 @@ network,geoname_id,registered_country_geoname_id,represented_country_geoname_id,
 2.56.139.0/24,5391959,2017370,,0,0,94119,37.7794,-122.4176,1000
 `)
 
-const enc = new TextEncoder()
-
-// identity multihash is useful for inlining data for use in tests
-const toIdentityCid = (val) => {
-  const bytes = enc.encode(val)
-  const mh = multihash.encode(bytes, 'identity')
-  return new CID(1, 'dag-pb', mh)
-}
-
 describe('generate', () => {
   it('parseCountries', () => {
     return expect(
-      gen.parseCountries(countries)
+      gen.parseCountries(parse, countries)
     ).to.eventually.be.eql({
       AD: 'Andorra',
       AE: 'United Arab Emirates',
@@ -54,7 +43,7 @@ describe('generate', () => {
 
   it('parseLocations', () => {
     return expect(
-      gen.parseLocations(locations, {
+      gen.parseLocations(parse, locations, {
         AD: 'Andorra',
         AE: 'United Arab Emirates',
         PL: 'Poland',
@@ -90,7 +79,7 @@ describe('generate', () => {
 
   it('parseBlocks', () => {
     return expect(
-      gen.parseBlocks(blocks, {
+      gen.parseBlocks(parse, blocks, {
         765876: [
           'Poland',
           'PL',
@@ -174,46 +163,5 @@ describe('generate', () => {
         min: 37260033
       }
     ])
-  })
-
-  it('putObject', () => {
-    const cid = toIdentityCid('myhash').toString()
-    const api = {
-      object: {
-        put: () => Promise.resolve(new CID(cid)),
-        stat: (hash) => Promise.resolve({ CumulativeSize: 5 })
-      }
-    }
-
-    return expect(
-      gen.putObject(['hello'], 3, api)
-    ).to.eventually.be.eql({
-      min: 3,
-      size: 5,
-      hash: cid
-    })
-  })
-
-  it('toNode', () => {
-    const api = {
-      object: {
-        put: (val) => Promise.resolve(toIdentityCid('myhash' + val.length)),
-        stat: (hash) => Promise.resolve({ CumulativeSize: hash.toString().length })
-      }
-    }
-
-    return expect(
-      gen.toNode([{
-        min: 1,
-        data: 0
-      }, {
-        min: 16777216,
-        data: ['Andorra', 'AD', '', '', '', 42.5, 1.5, '', '']
-      }], api)
-    ).to.eventually.be.eql({
-      min: 1,
-      size: 22,
-      hash: toIdentityCid('myhash147').toString()
-    })
   })
 })

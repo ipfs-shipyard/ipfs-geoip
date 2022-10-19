@@ -1,14 +1,15 @@
-'use strict'
 
-const Promise = require('bluebird')
-const csv = Promise.promisifyAll(require('csv'))
-const iconv = require('iconv-lite')
-const ip = require('ip')
-const _ = require('lodash')
-const EventEmitter = require('events').EventEmitter
-const concat = require('it-concat')
+import { default as Promise } from 'bluebird'
+import * as dagCbor from '@ipld/dag-cbor'
+import { CID } from 'multiformats/cid'
+import { sha256 } from 'multiformats/hashes/sha2'
+import ip from 'ip'
+import { chunk, reduce } from 'lodash-es'
+import { EventEmitter } from 'events'
+import concat from 'it-concat'
+import { cpus } from 'os'
 
-const normalizeName = require('./overrides')
+import normalizeName from './overrides.js'
 
 // Btree size
 const CHILDREN = 32
@@ -32,213 +33,169 @@ function emit (type, status, attrs) {
   }, attrs))
 }
 
-function parseCountries (locations) {
+async function parseCountries (parse, locations) {
   emit('countries', 'start')
-  return csv.parseAsync(locations, {
+  const parsed = parse(locations, {
     columns: true,
     cast: false,
     skip_empty_lines: true
   })
-    .then((parsed) => {
-      return _.reduce(parsed, (acc, row) => {
-        if (typeof acc[row.country_iso_code] != null) { // eslint-disable-line  valid-typeof
-          acc[row.country_iso_code] = normalizeName(row.country_name)
-        }
-        return acc
-      }, {})
-    })
-    .then((result) => {
-      emit('countries', 'end')
-      return result
-    })
+  const result = reduce(parsed, (acc, row) => {
+    if (typeof acc[row.country_iso_code] != null) { // eslint-disable-line  valid-typeof
+      acc[row.country_iso_code] = normalizeName(row.country_name)
+    }
+    return acc
+  }, {})
+  emit('countries', 'end')
+  return result
 }
 
-function parseLocations (locations, countries) {
+async function parseLocations (parse, locations, countries) {
   emit('locations', 'start')
-  return csv.parseAsync(locations, {
+  const parsed = parse(locations, {
     columns: true,
     cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
-    .then((parsed) => {
-      return _.reduce(parsed, (acc, row) => {
-        acc[row.geoname_id] = [
-          countries[row.country_iso_code],
-          row.country_iso_code,
-          row.subdivision_1_iso_code,
-          normalizeName(row.city_name)
-        ]
-        return acc
-      }, {})
-    })
-    .then((result) => {
-      emit('locations', 'end')
-      return result
-    })
+  const result = reduce(parsed, (acc, row) => {
+    acc[row.geoname_id] = [
+      countries[row.country_iso_code],
+      row.country_iso_code,
+      row.subdivision_1_iso_code,
+      normalizeName(row.city_name)
+    ]
+    return acc
+  }, {})
+  emit('locations', 'end')
+  return result
 }
 
-function parseBlocks (blocks, locations) {
+async function parseBlocks (parse, blocks, locations) {
   emit('blocks', 'start')
-  return csv.parseAsync(blocks, {
+  const parsed = parse(blocks, {
     columns: true,
     cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
-    .then((parsed) => {
-      let lastEnd = 0
+  let lastEnd = 0
+  const result = reduce(parsed, (acc, row) => {
+    const { firstAddress, lastAddress } = ip.cidrSubnet(row.network)
+    const start = ip.toLong(firstAddress)
+    const end = ip.toLong(lastAddress)
 
-      return _.reduce(parsed, (acc, row) => {
-        const { firstAddress, lastAddress } = ip.cidrSubnet(row.network)
-        const start = ip.toLong(firstAddress)
-        const end = ip.toLong(lastAddress)
+    const { geoname_id } = row // eslint-disable-line camelcase
+    const geonameData = locations[geoname_id] // eslint-disable-line camelcase
 
-        const { geoname_id } = row // eslint-disable-line camelcase
-        const geonameData = locations[geoname_id]
+    // conform to legacy input format by filling up missing data the first time
+    // a geoname is inspected
+    if (Array.isArray(geonameData) && geonameData.length < 7) {
+      geonameData.push(
+        String(row.postal_code),
+        Number(row.latitude),
+        Number(row.longitude)
+      )
+    }
 
-        // conform to legacy input format by filling up missing data the first time
-        // a geoname is inspected
-        if (Array.isArray(geonameData) && geonameData.length < 7) {
-          geonameData.push(
-            String(row.postal_code),
-            Number(row.latitude),
-            Number(row.longitude)
-          )
-        }
+    // unmapped range?
+    if ((start - lastEnd) > 1) {
+      acc.push({
+        min: lastEnd + 1,
+        data: 0
+      })
+    }
 
-        // unmapped range?
-        if ((start - lastEnd) > 1) {
-          acc.push({
-            min: lastEnd + 1,
-            data: 0
-          })
-        }
-
-        acc.push({
-          min: start,
-          data: geonameData
-        })
-
-        lastEnd = end
-
-        return acc
-      }, [])
+    acc.push({
+      min: start,
+      data: geonameData || 0
     })
-    .then((result) => {
-      emit('blocks', 'end')
-      return result
-    })
+
+    lastEnd = end
+
+    return acc
+  }, [])
+  emit('blocks', 'end')
+  return result
 }
 
-function putObject (data, min, api) {
-  return api.object.put(data, { enc: 'json' })
-    .then((cid) => {
-      return api.object.stat(cid)
-        .then((stat) => {
-          if (!stat) {
-            throw new Error(`Could not stat object ${cid.toString()}`)
-          }
-          emit('put', 'end')
-          return {
-            min: min,
-            size: stat.CumulativeSize,
-            hash: cid.toString()
-          }
-        })
-    })
+async function putBlock (data, min, car) {
+  let cid
+  try { // eslint-disable-line no-useless-catch
+    const bytes = dagCbor.encode(data)
+    const hash = await sha256.digest(bytes)
+    cid = CID.create(1, dagCbor.code, hash)
+    await car.put({ cid, bytes })
+  } catch (e) {
+    /*
+    console.error('failed data')
+    console.error(JSON.stringify(data, null, 2))
+    */
+    throw e
+  }
+  emit('put', 'end')
+  return {
+    min,
+    cid
+  }
 }
 
 // Create a btree leaf with data
 function createLeaf (data) {
-  // TODO: use dag-cbor instead of stringified JSON
-  return Buffer.from(JSON.stringify({
-    Data: JSON.stringify({
-      type: 'Leaf',
-      data: data
-    })
-  }))
+  return { data }
 }
 // Create a btree node with data
 function createNode (data) {
-  // TODO: use dag-cbor instead of stringified JSON
-  return Buffer.from(JSON.stringify({
-    Data: JSON.stringify({
-      type: 'Node',
-      mins: data.map((x) => x.min)
-    }),
-    Links: data.map((x) => ({
-      Hash: x.hash,
-      Size: x.size
-    }))
-  }))
+  return {
+    mins: data.map((x) => x.min),
+    links: data.map((x) => CID.asCID(x.cid)).filter(cid => cid) // valid CID instances are turned into DAG-CBOR links
+  }
 }
 
-function toNode (things, api) {
+async function toNode (things, car) {
   const length = things.length
 
   if (length <= CHILDREN) {
     const first = things[0]
     const min = first.min
 
-    if (!first.hash) {
-      return putObject(createLeaf(things), min, api)
+    if (!first.cid) {
+      return putBlock(createLeaf(things), min, car)
     }
 
-    return putObject(createNode(things), min, api)
+    return putBlock(createNode(things), min, car)
   }
 
   // divide
-  return Promise.map(_.chunk(things, CHILDREN), (res) => toNode(res, api), {
-    concurrency: require('os').cpus().length * 2
+  return Promise.map(chunk(things, CHILDREN), (res) => toNode(res, car), {
+    concurrency: cpus().length * 2
   })
-    .then((res) => toNode(res, api))
+    .then((res) => toNode(res, car))
 }
 
 async function file (ipfs, dir) {
-  // TODO: refactor from Buffer to Uint8Array
-  const buffer = await concat(ipfs.cat(`${DATA_HASH}/${dir}`), { type: 'buffer' })
-  // source files are in latin1, which requires handling with care
-  iconv.skipDecodeWarning = true
-  return iconv.decode(buffer, 'latin1')
+  const buffer = await concat(ipfs.cat(`${DATA_HASH}/${dir}`))
+  return buffer.toString('utf8')
 }
 
-function main (ipfs) {
-  return file(ipfs, locationsCsv)
-    .then(parseCountries)
-    .then((countries) => Promise.join(
-      file(ipfs, locationsCsv),
-      countries,
-      parseLocations
-    ))
-    .then((locations) => Promise.join(
-      file(ipfs, blocksCsv),
-      locations,
-      parseBlocks
-    ))
-    .then((result) => {
-      emit('node', 'start', {
-        length: result.length
-      })
-
-      return toNode(result, ipfs)
-    })
-    .then((result) => {
-      emit('node', 'end')
-      emit('pinning', 'start')
-      return ipfs.pin.add(result.hash, { recursive: true })
-    })
-    .then((result) => {
-      emit('pinning', 'end')
-      return result[0].cid.toString()
-    })
+async function main (ipfs, car) {
+  const { parse } = await import(process.browser ? 'csv-parse/browser/esm/sync' : 'csv-parse/sync')
+  const locations = await file(ipfs, locationsCsv)
+  const countries = await parseCountries(parse, locations)
+  const locationsWithCountries = await parseLocations(parse, locations, countries)
+  const blocks = await file(ipfs, blocksCsv)
+  let result = await parseBlocks(parse, blocks, locationsWithCountries)
+  emit('node', 'start', { length: result.length })
+  result = await toNode(result, car)
+  emit('node', 'end')
+  return result.cid
 }
 
-module.exports = {
+export default {
   parseCountries: parseCountries,
   parseLocations: parseLocations,
   parseBlocks: parseBlocks,
-  putObject: putObject,
+  putBlock: putBlock,
   toNode: toNode,
   main: main,
   progress: progress

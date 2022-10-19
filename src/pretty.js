@@ -1,9 +1,7 @@
-'use strict'
-
-const lookup = require('./lookup')
+import { lookup } from './lookup.js'
 
 function isLocal (address) {
-  var split = address.split('.')
+  const split = address.split('.')
   if (split[0] === '10') return true
   if (split[0] === '127') return true
   if (split[0] === '192' && split[1] === '168') return true
@@ -11,7 +9,7 @@ function isLocal (address) {
   return false
 }
 
-module.exports = async function lookupPretty (ipfs, multiaddrs) {
+export async function lookupPretty (ipfs, multiaddrs) {
   if (multiaddrs.length === 0) {
     throw new Error('lookup requires a multiaddr array with length > 0')
   }

@@ -1,34 +1,22 @@
-/* eslint-env mocha */
-'use strict'
+import { expect } from 'chai'
+import * as geoip from '../src/index.js'
 
-const expect = require('chai').expect
-const geoip = require('../src')
-
-const Ctl = require('ipfsd-ctl')
-
-describe('lookup', function () {
+describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
   this.timeout(100 * 1000)
-  let ipfs
-  let ipfsd
 
-  before(async () => {
-    ipfsd = await Ctl.createController({
-      type: 'proc',
-      ipfsModule: require('ipfs')
-    })
-    ipfs = ipfsd.api
-  })
+  const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
 
   it('fails on 127.0.0.1', async () => {
     try {
-      await geoip.lookup(ipfs, '127.0.0.1')
+      await geoip.lookup(ipfsGW, '127.0.0.1')
     } catch (err) {
       expect(err).to.have.property('message', 'Unmapped range')
     }
   })
 
   it('looks up 66.6.44.4', async () => {
-    const result = await geoip.lookup(ipfs, '66.6.44.4')
+    this.retries(3)
+    const result = await geoip.lookup(ipfsGW, '66.6.44.4')
     expect(
       result
     ).to.be.eql({
@@ -46,21 +34,17 @@ describe('lookup', function () {
   describe('lookupPretty', () => {
     it('fails on 127.0.0.1', async () => {
       try {
-        await geoip.lookupPretty(ipfs, '/ip4/127.0.0.1')
+        await geoip.lookupPretty(ipfsGW, '/ip4/127.0.0.1')
       } catch (err) {
         expect(err).to.have.property('message', 'Unmapped range')
       }
     })
 
     it('looks up 66.6.44.4', async () => {
-      const result = await geoip.lookupPretty(ipfs, '/ip4/66.6.44.4')
+      const result = await geoip.lookupPretty(ipfsGW, '/ip4/66.6.44.4')
       expect(
         result.formatted
       ).to.be.eql('Ashburn, VA, USA, Earth')
     })
-  })
-
-  after(async () => {
-    await ipfsd.stop()
   })
 })
