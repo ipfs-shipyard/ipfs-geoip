@@ -15,6 +15,7 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
   })
 
   it('looks up 66.6.44.4', async () => {
+    this.retries(3)
     const result = await geoip.lookup(ipfsGW, '66.6.44.4')
     expect(
       result
