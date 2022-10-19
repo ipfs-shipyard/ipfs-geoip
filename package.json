@@ -16,8 +16,7 @@
     "src",
     "dist"
   ],
-  "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/ipfs-shipyard/ipfs-geoip"
