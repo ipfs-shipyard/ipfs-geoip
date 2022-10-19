@@ -5,7 +5,7 @@ import { CID } from 'multiformats/cid'
 import fetch from 'cross-fetch'
 import { formatData } from './format.js'
 
-export const GEOIP_ROOT = CID.parse('bafyreihpmffy4un3u3qstv5bskxmdekdzydujbbephdwhshrgbrecjnqme') // GeoLite2-City-CSV_20220628
+export const GEOIP_ROOT = CID.parse('bafyreihnpl7ami7esahkfdnemm6idx4r2n6u3apmtcrxlqwuapgjsciihy') // b-tree version of GeoLite2-City-CSV_20221018
 
 const defaultGateway = ['https://ipfs.io', 'https://dweb.link']
 
@@ -28,9 +28,15 @@ async function getRawBlock (ipfs, cid) {
   for (const url of gateways) { // eslint-disable-line no-unreachable-loop
     const gwUrl = new URL(url)
     gwUrl.pathname = `/ipfs/${cid.toString()}`
-    gwUrl.search = '?format=raw'
+    gwUrl.search = '?format=raw' // necessary as not every gateway supports dag-cbor, but every should support sending raw block as-is
     try {
-      const res = await fetch(gwUrl, { cache: 'force-cache' })
+      const res = await fetch(gwUrl, {
+        headers: {
+          // also set header, just in case ?format= is filtered out by some reverse proxy
+          Accept: 'application/vnd.ipld.raw'
+        },
+        cache: 'force-cache'
+      })
       if (!res.ok) throw res
       return new Uint8Array(await res.arrayBuffer())
     } catch (cause) {
