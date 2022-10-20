@@ -16,6 +16,7 @@
     "src",
     "dist"
   ],
+  "type": "module",
   "main": "dist/index.min.js",
   "repository": {
     "type": "git",
@@ -64,7 +65,18 @@
     "npm": ">=8.0.0"
   },
   "aegir": {
-    "tsRepo": false
+    "tsRepo": false,
+    "build": {
+      "config": {
+        "format": "esm",
+        "banner": {
+          "js": ""
+        },
+        "footer": {
+          "js": ""
+        }
+      }
+    }
   },
   "pre-commit": [
     "lint"
