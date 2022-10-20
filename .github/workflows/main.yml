@@ -44,8 +44,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: microsoft/playwright-github-action@v1
       - run: npm install
-      - run: npx aegir test -t browser --bail --cov
-      - run: npx aegir test -t webworker --bail
+      - run: npx aegir test -t browser --bail --cov --files test/**/*.browser.spec.{js,cjs,mjs}
+      - run: npx aegir test -t webworker --bail --files test/**/*.browser.spec.{js,cjs,mjs}
       - uses: codecov/codecov-action@v1
   test-firefox:
     needs: check
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: microsoft/playwright-github-action@v1
       - run: npm install
-      - run: npx aegir test -t browser -t webworker --bail -- --browser firefox
+      - run: npx aegir test -t browser -t webworker --bail --files test/**/*.browser.spec.{js,cjs,mjs} -- --browser firefox
   test-webkit:
     needs: check
     runs-on: ubuntu-latest
@@ -62,11 +62,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: microsoft/playwright-github-action@v1
       - run: npm install
-      - run: npx aegir test -t browser -t webworker --bail -- --browser webkit
+      - run: npx aegir test -t browser -t webworker --bail --files test/**/*.browser.spec.{js,cjs,mjs} -- --browser webkit
   test-electron-main:
     needs: check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: npm install
-      - run: npx xvfb-maybe aegir test -t electron-main --bail
+      - run: npx xvfb-maybe aegir test -t electron-main --bail --files test/**/*.browser.spec.{js,cjs,mjs}
