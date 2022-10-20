@@ -2,7 +2,6 @@ export default {
   tsRepo: false,
   build: {
     config: {
-      external: ['fs'],
       format: 'esm',
       banner: {
         js: ''
