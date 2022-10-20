@@ -44,13 +44,44 @@ npm install --save ipfs-geoip
 
 Instead of a local installation (and browserification) you may request a [remote copy from jsDelivr](https://www.jsdelivr.com/package/npm/ipfs-geoip):
 
+**<v9**
 ```html
 <!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@8.0.0/dist/index.min.js"></script>
 ```
 
 When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
 
+**>=v9**
+
+```html
+<!-- ipfs-http-client at the time of writing does not distribute esm -->
+<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client@58.0.1/dist/index.min.js"></script>
+<!-- the script type is module -->
+<script type="module">
+  import { lookup } from 'https://cdn.jsdelivr.net/npm/ipfs-geoip@9.0.0/dist/index.min.js';
+  const client = window.IpfsHttpClient.create({
+    host: 'ipfs.io',
+    port: 443,
+    protocol: 'https'
+  });
+  console.log(await lookup(client, '66.6.44.4'))
+</script>
+```
+
+The response in the console looks like:
+```js
+{
+    "country_name": "USA",
+    "country_code": "US",
+    "region_code": "VA",
+    "city": "Ashburn",
+    "postal_code": "20149",
+    "latitude": 39.0469,
+    "longitude": -77.4903,
+    "planet": "Earth"
+}
+```
 
 ## Usage
 
