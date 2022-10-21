@@ -42,34 +42,18 @@ npm install --save ipfs-geoip
 
 ### CDN
 
-Instead of a local installation (and browserification) you may request a [remote copy from jsDelivr](https://www.jsdelivr.com/package/npm/ipfs-geoip):
-
-**<v9**
-```html
-<!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip@8.0.0/dist/index.min.js"></script>
-```
-
-When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
-
-**>=v9**
+Instead of a local installation (and browserification) you may request a specific
+version `N.N.N` as a [remote copy from jsDelivr](https://www.jsdelivr.com/package/npm/ipfs-geoip):
 
 ```html
-<!-- ipfs-http-client at the time of writing does not distribute esm -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-http-client@58.0.1/dist/index.min.js"></script>
-<!-- the script type is module -->
 <script type="module">
-  import { lookup } from 'https://cdn.jsdelivr.net/npm/ipfs-geoip@9.0.0/dist/index.min.js';
-  const client = window.IpfsHttpClient.create({
-    host: 'ipfs.io',
-    port: 443,
-    protocol: 'https'
-  });
-  console.log(await lookup(client, '66.6.44.4'))
+  import { lookup } from 'https://cdn.jsdelivr.net/npm/ipfs-geoip@N.N.N/dist/index.min.js';
+  const gateway = 'https://ipfs.io'
+  console.log(await lookup(gateway, '66.6.44.4'))
 </script>
 ```
 
-The response in the console looks like:
+The response in the console should look similar to:
 ```js
 {
     "country_name": "USA",
@@ -87,25 +71,25 @@ The response in the console looks like:
 
 ### With public gateways (default)
 
-If `ipfs` is a string or array of strings with public gateway URLs, it will be used for
+If `gateways` is a string or array of strings with public gateway URLs, it will be used for
 fetching IPFS blocks as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
-and parsing them as DAG-CBOR locally:
+and parsing them as DAG-CBOR locally via [@ipld/dag-cbor](https://www.npmjs.com/package/@ipld/dag-cbor):
 
 ```js
 const geoip = require('ipfs-geoip')
 const exampleIp = '66.6.44.4'
 
-const ipfsGw = ['https://ipfs.io', 'https://dweb.link']
+const gateways = ['https://ipfs.io', 'https://dweb.link']
 
 try {
-  const result = await geoip.lookup(ipfsGw, exampleIp)
+  const result = await geoip.lookup(gateways, exampleIp)
   console.log('Result: ', result)
 } catch (err) {
   console.log('Error: ' + err)
 }
 
 try {
-  const result = await geoip.lookupPretty(ipfsGw, '/ip4/' + exampleIp)
+  const result = await geoip.lookupPretty(gateways, '/ip4/' + exampleIp)
   console.log('Pretty result: %s', result.formatted)
 } catch (err) {
   console.log('Error: ' + err)
