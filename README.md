@@ -42,39 +42,54 @@ npm install --save ipfs-geoip
 
 ### CDN
 
-Instead of a local installation (and browserification) you may request a [remote copy from jsDelivr](https://www.jsdelivr.com/package/npm/ipfs-geoip):
+Instead of a local installation (and browserification) you may request a specific
+version `N.N.N` as a [remote copy from jsDelivr](https://www.jsdelivr.com/package/npm/ipfs-geoip):
 
 ```html
-<!-- loading the minified version using jsDelivr -->
-<script src="https://cdn.jsdelivr.net/npm/ipfs-geoip/dist/index.min.js"></script>
+<script type="module">
+  import { lookup } from 'https://cdn.jsdelivr.net/npm/ipfs-geoip@N.N.N/dist/index.min.js';
+  const gateway = 'https://ipfs.io'
+  console.log(await lookup(gateway, '66.6.44.4'))
+</script>
 ```
 
-When using prebuilt bundle from CDN, `ipfs-geoip` will be exposed under `window.IpfsGeoip`
-
+The response in the console should look similar to:
+```js
+{
+    "country_name": "USA",
+    "country_code": "US",
+    "region_code": "VA",
+    "city": "Ashburn",
+    "postal_code": "20149",
+    "latitude": 39.0469,
+    "longitude": -77.4903,
+    "planet": "Earth"
+}
+```
 
 ## Usage
 
 ### With public gateways (default)
 
-If `ipfs` is a string or array of strings with public gateway URLs, it will be used for
+If `gateways` is a string or array of strings with public gateway URLs, it will be used for
 fetching IPFS blocks as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
-and parsing them as DAG-CBOR locally:
+and parsing them as DAG-CBOR locally via [@ipld/dag-cbor](https://www.npmjs.com/package/@ipld/dag-cbor):
 
 ```js
 const geoip = require('ipfs-geoip')
 const exampleIp = '66.6.44.4'
 
-const ipfsGw = ['https://ipfs.io', 'https://dweb.link']
+const gateways = ['https://ipfs.io', 'https://dweb.link']
 
 try {
-  const result = await geoip.lookup(ipfsGw, exampleIp)
+  const result = await geoip.lookup(gateways, exampleIp)
   console.log('Result: ', result)
 } catch (err) {
   console.log('Error: ' + err)
 }
 
 try {
-  const result = await geoip.lookupPretty(ipfsGw, '/ip4/' + exampleIp)
+  const result = await geoip.lookupPretty(gateways, '/ip4/' + exampleIp)
   console.log('Pretty result: %s', result.formatted)
 } catch (err) {
   console.log('Error: ' + err)
