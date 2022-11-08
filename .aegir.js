@@ -1,5 +1,13 @@
 export default {
   tsRepo: false,
+  dependencyCheck: {
+    input: [
+      'dist/**/*.js',
+    ],
+    productionInput: [
+      'dist/**/*.js',
+    ],
+  },
   build: {
     config: {
       format: 'esm',
