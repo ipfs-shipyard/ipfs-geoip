@@ -1,3 +1,10 @@
+## [9.0.1](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.0.0...v9.0.1) (2022-11-08)
+
+
+### Bug Fixes
+
+* **deps:** ESM deps should be dev-only ([#100](https://github.com/ipfs-shipyard/ipfs-geoip/issues/100)) ([5bd8b60](https://github.com/ipfs-shipyard/ipfs-geoip/commit/5bd8b605de15b848e8ded570704a3ce37ef136d3))
+
 <a name="8.0.0"></a>
 # [8.0.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v7.0.0...v8.0.0) (2022-06-29)
 
@@ -97,6 +104,3 @@
 ### Features
 
 * update dependencies ([d962835](https://github.com/ipfs/ipfs-geoip/commit/d962835))
-
-
-

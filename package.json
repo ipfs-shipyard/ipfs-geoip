@@ -1,6 +1,6 @@
 {
   "name": "ipfs-geoip",
-  "version": "9.0.0",
+  "version": "9.0.1",
   "description": "Library for ipfs geoip lookups",
   "keywords": [
     "ipfs",
