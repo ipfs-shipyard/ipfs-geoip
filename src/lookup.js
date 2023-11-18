@@ -6,7 +6,7 @@ import fetch from 'cross-fetch'
 import { formatData } from './format.js'
 import { MAX_LOOKUP_RETRIES } from './constants.js'
 
-export const GEOIP_ROOT = CID.parse('bafyreihnpl7ami7esahkfdnemm6idx4r2n6u3apmtcrxlqwuapgjsciihy') // b-tree version of GeoLite2-City-CSV_20221018
+export const GEOIP_ROOT = CID.parse('bafyreif3tfdpr5n4jdrbielmcapwvbpcthepfkwq2vwonmlhirbjmotedi') // b-tree version of GeoLite2-City-CSV_20231117
 
 const defaultGateway = ['https://ipfs.io', 'https://dweb.link']
 

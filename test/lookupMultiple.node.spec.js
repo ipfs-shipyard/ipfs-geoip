@@ -24,6 +24,7 @@ describe('[Runner Node]: lookup via HTTP Gateway supporting application/vnd.ipld
     expect(
       result
     ).to.be.eql({
+      formatted: 'Ashburn, VA, USA, Earth',
       country_name: 'USA',
       country_code: 'US',
       region_code: 'VA',
