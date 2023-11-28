@@ -14,7 +14,6 @@ describe('[Runner Node]: lookup via HTTP Gateway supporting application/vnd.ipld
   })
   afterEach(() => {
     rewiredGeoIp = null
-    failedCalls = 0
   })
 
   it('looks up multiple times before failing', async () => {
