@@ -8,5 +8,10 @@
     "sourceType": "module",
     "allowImportExportEverywhere": true
   },
-  "ignorePatterns": ["**/test/fixtures/**", "**/bin/load-fixtures.sh", "**/dist/**", "**/node_modules/**"],
+  "ignorePatterns": [
+    "**/bin/load-fixtures.sh", 
+    "**/dist/**", 
+    "**/node_modules/**",
+    "**/test/fixtures/**"
+  ],
 }
