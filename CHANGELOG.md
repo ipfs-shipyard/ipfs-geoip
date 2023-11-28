@@ -1,3 +1,10 @@
+## [9.1.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.0.1...v9.1.0) (2023-11-28)
+
+
+### Features
+
+* updated dataset (2023-11-17) ([#112](https://github.com/ipfs-shipyard/ipfs-geoip/issues/112)) ([83c1b09](https://github.com/ipfs-shipyard/ipfs-geoip/commit/83c1b093d3534df0163d4c66648b8b19500fcfec))
+
 ## [9.0.1](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.0.0...v9.0.1) (2022-11-08)
 
 
