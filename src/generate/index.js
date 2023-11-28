@@ -20,7 +20,7 @@ const CHILDREN = 32
 //     DATA_HASH
 //     |- locationsCsv
 //     |- blocksCsv
-const DATA_HASH = 'bafybeicfcxk4bx3nwmg3hwjmlc6n2qzn73mfm5itfpadwh5w7bux2chgz4' // GeoLite2-City-CSV_20221018
+const DATA_HASH = 'bafybeifv6fqeyyvratbzewxpasvfxdsnqz5wjv6e6cp36pr5tkccmtljcm' // GeoLite2-City-CSV_20231117
 const locationsCsv = 'GeoLite2-City-Locations-en.csv'
 const blocksCsv = 'GeoLite2-City-Blocks-IPv4.csv'
 

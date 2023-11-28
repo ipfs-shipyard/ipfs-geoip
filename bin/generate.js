@@ -2,7 +2,7 @@
 /* eslint no-console: "off",  no-unreachable: "off" */
 import Gauge from 'gauge'
 import gen from '../src/generate/index.js'
-import { create } from 'ipfs-http-client'
+import { create } from 'kubo-rpc-client'
 import { CarWriter } from '@ipld/car'
 import fs from 'fs'
 import { Readable } from 'stream'
