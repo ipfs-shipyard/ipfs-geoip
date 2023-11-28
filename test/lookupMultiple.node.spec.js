@@ -1,30 +1,60 @@
-import { decode as dagCborDecode } from '@ipld/dag-cbor'
-import esmock from 'esmock'
 import { expect } from 'chai'
+import { MAX_LOOKUP_RETRIES } from '../src/constants.js'
+import fetch from 'cross-fetch'
+import esmock from 'esmock'
 
 describe('[Runner Node]: lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
   const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
 
+  let rewiredGeoIp
+  let failedCalls = 0
+
+  beforeEach(async () => {
+    failedCalls = 0
+  })
+  afterEach(() => {
+    rewiredGeoIp = null
+  })
+
   it('looks up multiple times before failing', async () => {
-    let decodeCallCount = 0
-    const rewiredGeoIp = await esmock('../src/index.js', {}, {
-      '@ipld/dag-cbor': {
-        decode: (...args) => {
-          decodeCallCount += 1
-          if (decodeCallCount === 1) {
-            throw new Error('Decode Failed')
-          }
-          return dagCborDecode(...args)
+    rewiredGeoIp = await esmock('../src/index.js', {}, {
+      'cross-fetch': {
+        default: (gwUrl, options) => {
+          failedCalls++
+          throw new Error('mock failure')
         }
       }
     })
 
-    const result = await rewiredGeoIp.lookup(ipfsGW, '66.6.44.4')
-    expect(decodeCallCount).to.be.greaterThan(1)
+    try {
+      await rewiredGeoIp.lookup(ipfsGW, '66.6.44.45') // use a different IP to avoid the cache
+      // should not reach here
+      expect.fail('should have thrown')
+    } catch (err) {
+      expect(err).to.have.property('message').to.contain('unable to fetch raw block for CID')
+    } finally {
+      expect(failedCalls).to.equal(MAX_LOOKUP_RETRIES)
+    }
+  })
+
+  it('returns successfully if MAX_LOOKUP_RETRIES is not reached', async () => {
+    rewiredGeoIp = await esmock('../src/index.js', {}, {
+      'cross-fetch': {
+        default: (gwUrl, options) => {
+          if (failedCalls < MAX_LOOKUP_RETRIES - 1) {
+            failedCalls++
+            throw new Error('mock failure')
+          }
+          return fetch(gwUrl, options)
+        }
+      }
+    })
+
+    const result = await rewiredGeoIp.lookup(ipfsGW, '66.6.44.44') // use a different IP to avoid the cache
+    expect(failedCalls).to.be.greaterThan(1)
     expect(
       result
     ).to.be.eql({
-      formatted: 'Ashburn, VA, USA, Earth',
       country_name: 'USA',
       country_code: 'US',
       region_code: 'VA',
