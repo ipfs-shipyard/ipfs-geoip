@@ -37,18 +37,21 @@ export default {
         res.end(mockBlock)
       })
       let gwUrl = process.env.IPFS_GATEWAY
-      await new Promise((resolve, _reject) => {
-        server.listen(0, () => {
-          gwUrl = `http://localhost:${server.address().port}`
-          console.log(`server listening at ${gwUrl}`)
-          resolve()
+      if (!gwUrl) {
+        // no gateway specified, start the server
+        await new Promise((resolve, _reject) => {
+          server.listen(0, () => {
+            gwUrl = `http://localhost:${server.address().port}`
+            console.log(`server listening at ${gwUrl}`)
+            resolve()
+          })
         })
-      })
+      }
+
       return {
         server,
         env: {
           IPFS_GATEWAY: gwUrl,
-          // NODE_OPTIONS: `--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("esmock", pathToFileURL("./"));`
         }
       }
     },
