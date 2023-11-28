@@ -40,7 +40,7 @@
     "chai-as-promised": "^7.1.1",
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.3.0",
-    "esmock": "^2.0.6",
+    "esmock": "^2.6.0",
     "gauge": "^4.0.4",
     "ip": "^2.0.0",
     "it-concat": "^2.0.0",

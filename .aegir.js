@@ -48,7 +48,7 @@ export default {
         server,
         env: {
           IPFS_GATEWAY: gwUrl,
-          NODE_OPTIONS: '--loader=esmock'
+          // NODE_OPTIONS: `--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("esmock", pathToFileURL("./"));`
         }
       }
     },
