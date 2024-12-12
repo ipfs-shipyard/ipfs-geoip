@@ -1,3 +1,15 @@
+## [9.1.1](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.1.0...v9.1.1) (2024-12-12)
+
+### Bug Fixes
+
+* **ci:** rename aegir action ([15d6a39](https://github.com/ipfs-shipyard/ipfs-geoip/commit/15d6a396b38b39bd81fc8064fa8e7cd9a49fcb73))
+
+### Trivial Changes
+
+* **deps:** bump json5 from 1.0.1 to 1.0.2 ([#106](https://github.com/ipfs-shipyard/ipfs-geoip/issues/106)) ([bf605b6](https://github.com/ipfs-shipyard/ipfs-geoip/commit/bf605b6364480e8c8188c52fb934d9ef7ccc8ab2))
+* multiformats update ([1d2fc35](https://github.com/ipfs-shipyard/ipfs-geoip/commit/1d2fc35d0a6a43eb3a373ae4c214fee060353564))
+* update aegir and linter ([df652f2](https://github.com/ipfs-shipyard/ipfs-geoip/commit/df652f26e0463dea450bf0f256631eeda2d3b299))
+
 ## [9.1.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.0.1...v9.1.0) (2023-11-28)
 
 
