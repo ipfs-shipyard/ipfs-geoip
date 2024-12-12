@@ -17,6 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm install
-      - uses: ipfs/aegir/actions/bundle-size@master
+      - uses: ipfs/aegir/actions/bundle-size@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
