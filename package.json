@@ -32,8 +32,8 @@
     "generate": "node bin/generate.js"
   },
   "devDependencies": {
-    "@ipld/car": "^4.1.5",
-    "@ipld/dag-cbor": "^7.0.3",
+    "@ipld/car": "^5.3.3",
+    "@ipld/dag-cbor": "^9.2.2",
     "aegir": "^37.5.4",
     "bluebird": "^3.7.2",
     "chai": "^4.3.6",
@@ -46,7 +46,7 @@
     "it-concat": "^2.0.0",
     "kubo-rpc-client": "^3.0.1",
     "lodash-es": "^4.17.21",
-    "multiformats": "^12.1.3",
+    "multiformats": "^13.3.1",
     "multihashes": "^4.0.3",
     "p-memoize": "^7.1.0",
     "pre-commit": "^1.2.2",
