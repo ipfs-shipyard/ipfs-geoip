@@ -2,9 +2,8 @@
 
 import * as chai from 'chai'
 import { default as asPromised } from 'chai-as-promised'
-import { fromString } from 'uint8arrays/from-string'
 import { parse } from 'csv-parse/browser/esm/sync'
-
+import { fromString } from 'uint8arrays/from-string'
 import { default as gen } from '../src/generate/index.js'
 chai.use(asPromised)
 const expect = chai.expect

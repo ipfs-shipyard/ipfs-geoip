@@ -1,5 +1,4 @@
 {
-  "extends": "ipfs/js",
   "rules": {
     "import/no-named-as-default": 0,
     "import/no-named-default": 0

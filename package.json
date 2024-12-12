@@ -34,7 +34,7 @@
   "devDependencies": {
     "@ipld/car": "^5.3.3",
     "@ipld/dag-cbor": "^9.2.2",
-    "aegir": "^37.5.4",
+    "aegir": "^45.0.8",
     "bluebird": "^3.7.2",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /* eslint no-console: "off",  no-unreachable: "off" */
-import Gauge from 'gauge'
-import gen from '../src/generate/index.js'
-import { create } from 'kubo-rpc-client'
-import { CarWriter } from '@ipld/car'
 import fs from 'fs'
 import { Readable } from 'stream'
 import { promisify } from 'util'
+import { CarWriter } from '@ipld/car'
+import Gauge from 'gauge'
+import { create } from 'kubo-rpc-client'
 import { CID } from 'multiformats/cid'
+import gen from '../src/generate/index.js'
 
 const fsopen = promisify(fs.open)
 const fsclose = promisify(fs.close)

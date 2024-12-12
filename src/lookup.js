@@ -1,10 +1,10 @@
-import { default as memoize } from 'p-memoize'
-import ip from 'ip'
 import { decode as dagCborDecode } from '@ipld/dag-cbor'
-import { CID } from 'multiformats/cid'
 import fetch from 'cross-fetch'
-import { formatData } from './format.js'
+import ip from 'ip'
+import { CID } from 'multiformats/cid'
+import { default as memoize } from 'p-memoize'
 import { MAX_LOOKUP_RETRIES } from './constants.js'
+import { formatData } from './format.js'
 
 export const GEOIP_ROOT = CID.parse('bafyreif3tfdpr5n4jdrbielmcapwvbpcthepfkwq2vwonmlhirbjmotedi') // b-tree version of GeoLite2-City-CSV_20231117
 

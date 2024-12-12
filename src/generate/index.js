@@ -1,14 +1,12 @@
-
-import { default as Promise } from 'bluebird'
+import { EventEmitter } from 'events'
+import { cpus } from 'os'
 import * as dagCbor from '@ipld/dag-cbor'
+import { default as Promise } from 'bluebird'
+import ip from 'ip'
+import concat from 'it-concat'
+import { chunk, reduce } from 'lodash-es'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
-import ip from 'ip'
-import { chunk, reduce } from 'lodash-es'
-import { EventEmitter } from 'events'
-import concat from 'it-concat'
-import { cpus } from 'os'
-
 import normalizeName from './overrides.js'
 
 // Btree size
@@ -28,8 +26,8 @@ const progress = new EventEmitter()
 
 function emit (type, status, attrs) {
   progress.emit('progress', Object.assign({}, {
-    type: type,
-    status: status
+    type,
+    status
   }, attrs))
 }
 
@@ -192,11 +190,11 @@ async function main (ipfs, car) {
 }
 
 export default {
-  parseCountries: parseCountries,
-  parseLocations: parseLocations,
-  parseBlocks: parseBlocks,
-  putBlock: putBlock,
-  toNode: toNode,
-  main: main,
-  progress: progress
+  parseCountries,
+  parseLocations,
+  parseBlocks,
+  putBlock,
+  toNode,
+  main,
+  progress
 }

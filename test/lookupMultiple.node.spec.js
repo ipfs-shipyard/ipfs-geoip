@@ -1,7 +1,7 @@
 import { expect } from 'chai'
-import { MAX_LOOKUP_RETRIES } from '../src/constants.js'
 import fetch from 'cross-fetch'
 import esmock from 'esmock'
+import { MAX_LOOKUP_RETRIES } from '../src/constants.js'
 
 describe('[Runner Node]: lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
   const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
