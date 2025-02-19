@@ -1,3 +1,9 @@
+## [9.2.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.1.1...v9.2.0) (2025-02-19)
+
+### Features
+
+* updated dataset (GeoLite2-City-CSV_20250218) ([#116](https://github.com/ipfs-shipyard/ipfs-geoip/issues/116)) ([1da78de](https://github.com/ipfs-shipyard/ipfs-geoip/commit/1da78deee1af9e2b66f8a40c313cb02c5368239a))
+
 ## [9.1.1](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.1.0...v9.1.1) (2024-12-12)
 
 ### Bug Fixes
