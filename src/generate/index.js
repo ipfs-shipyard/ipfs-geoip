@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events'
-import { cpus } from 'os'
 import * as dagCbor from '@ipld/dag-cbor'
 import { default as Promise } from 'bluebird'
 import ip from 'ip'
@@ -18,7 +17,7 @@ const CHILDREN = 32
 //     DATA_HASH
 //     |- locationsCsv
 //     |- blocksCsv
-const DATA_HASH = 'bafybeifv6fqeyyvratbzewxpasvfxdsnqz5wjv6e6cp36pr5tkccmtljcm' // GeoLite2-City-CSV_20231117
+const DATA_HASH = 'bafybeiggln2inqvokpp7rcjpqaou7v73rknemitrv6bp3q67vimthtsopu' // GeoLite2-City-CSV_20250218
 const locationsCsv = 'GeoLite2-City-Locations-en.csv'
 const blocksCsv = 'GeoLite2-City-Blocks-IPv4.csv'
 
@@ -164,9 +163,11 @@ async function toNode (things, car) {
     return putBlock(createNode(things), min, car)
   }
 
+  const cpuCores = navigator.hardwareConcurrency || 1
+
   // divide
   return Promise.map(chunk(things, CHILDREN), (res) => toNode(res, car), {
-    concurrency: cpus().length * 2
+    concurrency: cpuCores * 2
   })
     .then((res) => toNode(res, car))
 }

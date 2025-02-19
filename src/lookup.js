@@ -6,9 +6,9 @@ import { default as memoize } from 'p-memoize'
 import { MAX_LOOKUP_RETRIES } from './constants.js'
 import { formatData } from './format.js'
 
-export const GEOIP_ROOT = CID.parse('bafyreif3tfdpr5n4jdrbielmcapwvbpcthepfkwq2vwonmlhirbjmotedi') // b-tree version of GeoLite2-City-CSV_20231117
+export const GEOIP_ROOT = CID.parse('bafyreibm6gpmdrbbf27x4b473fenradnlc3zcussd3vfjy4nv7ta3uuyge') // b-tree version of GeoLite2-City-CSV_20250218
 
-const defaultGateway = ['https://ipfs.io', 'https://dweb.link']
+const defaultGateway = ['https://trustless-gateway.link', 'https://ipfs.io', 'https://dweb.link']
 
 /**
  * @param {object|string} ipfs
