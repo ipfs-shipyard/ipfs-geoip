@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events'
-import { cpus } from 'os'
 import * as dagCbor from '@ipld/dag-cbor'
 import { default as Promise } from 'bluebird'
 import ip from 'ip'
@@ -164,9 +163,11 @@ async function toNode (things, car) {
     return putBlock(createNode(things), min, car)
   }
 
+  const cpuCores = navigator.hardwareConcurrency || 1
+
   // divide
   return Promise.map(chunk(things, CHILDREN), (res) => toNode(res, car), {
-    concurrency: cpus().length * 2
+    concurrency: cpuCores * 2
   })
     .then((res) => toNode(res, car))
 }
