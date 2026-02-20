@@ -111,12 +111,14 @@ describe('generate', () => {
 
     expect(entries).to.have.length(4)
 
-    // each entry has a key (Uint8Array) and value (location_id)
+    // each entry has a key (Uint8Array) and value [locId, endKey]
     for (const entry of entries) {
       expect(entry.key).to.be.instanceOf(Uint8Array)
-      expect(entry.key.length).to.equal(16) // 128-bit key
-      expect(entry.value).to.be.a('number')
-      expect(entry.value).to.be.greaterThanOrEqual(0)
+      expect(entry.key.length).to.equal(16) // 128-bit start key
+      expect(entry.value).to.be.an('array').with.length(2)
+      expect(entry.value[0]).to.be.a('number').greaterThanOrEqual(0)
+      expect(entry.value[1]).to.be.instanceOf(Uint8Array)
+      expect(entry.value[1].length).to.equal(16) // 128-bit end key
     }
 
     // location data was augmented with postal/lat/lon

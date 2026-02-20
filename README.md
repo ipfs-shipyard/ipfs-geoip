@@ -140,13 +140,66 @@ Returns a promise that resolves to an object of the form
 Provides the same results as `lookup` with the addition of
 a `formatted` property that looks like this: `Mountain View, CA, United States, Earth`.
 
+## Data Structures
+
+The lookup dataset is stored as [DAG-CBOR](https://ipld.io/specs/codecs/dag-cbor/spec/) blocks on IPFS.
+Both IPv4 and IPv6 addresses are supported. IPv4 addresses are mapped into
+IPv4-mapped IPv6 space (`::ffff:a.b.c.d`) so that all keys are 128-bit.
+
+A root metadata node ties everything together:
+
+```js
+{
+  version: 2,              // data format version
+  indexRoot: CID,          // root of the prolly tree index
+  locationTableRoot: CID,  // root of the sharded location table
+  entryCount: Number,      // total index entries (IPv4 + IPv6)
+  locationCount: Number,   // unique locations
+  pageSize: 256            // entries per location page
+}
+```
+
+### Prolly tree index
+
+IP-to-location mapping is stored in a [prolly tree](https://web.archive.org/web/20250330043408/https://blog.mauve.moe/posts/prolly-tree-analysis)
+(a deterministically-chunked search tree). Each entry maps a 128-bit IP key
+(the start of a CIDR range, as a 16-byte `Uint8Array`) to a value of
+`[location_id, end_key]` where `end_key` is the last IP in the CIDR range.
+
+Lookup traverses the tree from root to leaf, doing a floor search (greatest
+key <= the queried IP) at each level. After finding a match, the queried IP
+is checked against `end_key` to verify it falls within the CIDR range.
+IPs that fall in gaps between ranges get an "Unmapped range" error.
+
+Block format:
+
+- Branch: `{ branch: [distance, [[key, cid], ...]], closed }`
+- Leaf: `{ leaf: [[key, value], ...], closed }`
+
+A typical lookup fetches 3-4 blocks: root metadata, 1-2 branch nodes, and a leaf.
+
+### Sharded location table
+
+Locations are stored in a flat array split into pages of 256 entries each.
+The `locationTableRoot` block contains an array of CIDs, one per page.
+A `location_id` maps to page `floor(id / 256)`, offset `id % 256`.
+
+Each location entry is an array:
+
+```js
+[country_name, country_code, region_code, city, postal_code, latitude, longitude]
+```
+
+A lookup fetches two additional blocks: the page CID array and the specific page.
+
 ## Maintenance
 
 ### CIDs of the lookup dataset
 
 The current root hash for lookups is defined under `GEOIP_ROOT` in `src/lookup.js`.
 
-It is a proprietary b-tree generated from source files provided defined under `DATA_HASH` in `src/generate/index.js`.
+It is generated from GeoLite2 CSV source files fetched from the `DATA_HASH`
+directory defined in `src/generate/index.js`.
 
 ### Updating GeoLite2 dataset
 
@@ -156,20 +209,17 @@ There is a generator included, that can be run with
 $ npm run generate
 ```
 
-This takes quite a long time to import, but you only need to do it once when updating the global index used by the lookup feature.
+This takes quite a long time to import, but you only need to do it once when
+updating the global index used by the lookup feature.
 
-It reads original GeoLite CSV files provided from `DATA_HASH` directory defined
-in `src/generate/index.js`, and turns them into a 32-way branching b-tree
-of [DAG-CBOR](https://ipld.io/specs/codecs/dag-cbor/spec/) objects.
+It reads original GeoLite CSV files (IPv4 and IPv6 blocks + locations) from the
+`DATA_HASH` directory defined in `src/generate/index.js`, builds the prolly tree
+index and sharded location table described above, and writes all blocks as
+DAG-CBOR into `ipfs-geoip.car`.
 
-The tree is saved as `ipfs-geoip.car` and the root CID is printed to the
-terminal. It should then be imported to IPFS and the root CID should be pinned
-in multiple locations,  and stored as the new `GEOIP_ROOT` in `src/lookup.js`
-
-> 👉 this library uses [`dag-cbor`](https://ipld.io/specs/codecs/dag-cbor/spec/)
-> and reads raw blocks via [`ipfs.block` RPC](https://github.com/ipfs/js-ipfs/blob/master/docs/core-api/BLOCK.md),
-> but could be refactored to fetch blocks as [`application/vnd.ipld.raw`](https://www.iana.org/assignments/media-types/application/vnd.ipld.raw)
-> from a regular [HTTP Gateway](https://docs.ipfs.tech/reference/http/gateway/).
+The root CID is printed to the terminal. It should then be imported to IPFS,
+pinned in multiple locations, and stored as the new `GEOIP_ROOT` in
+`src/lookup.js`.
 
 
 ## Testing in CLI

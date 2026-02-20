@@ -75,22 +75,25 @@ async function traceLookup(ip) {
       for (let i = node.leaf.length - 1; i >= 0; i--) {
         if (binaryCompare(searchKey, node.leaf[i][0]) >= 0) { idx = i; break }
       }
-      if (idx >= 0) locId = node.leaf[idx][1]
+      if (idx >= 0) {
+        const val = node.leaf[idx][1]
+        locId = Array.isArray(val) ? val[0] : val
+      }
       break
     }
     throw new Error('bad node')
   }
 
-  // fetch location table root
+  // fetch location table root and page (if the IP was mapped)
   const locTable = await getBlock(CID.asCID(meta.locationTableRoot))
-
-  // fetch the specific page needed for this locId
-  const pageSize = meta.pageSize || 256
-  const pageIdx = Math.floor(locId / pageSize)
-  await getBlock(CID.asCID(locTable[pageIdx]))
+  if (locId !== undefined) {
+    const pageSize = meta.pageSize || 256
+    const pageIdx = Math.floor(locId / pageSize)
+    await getBlock(CID.asCID(locTable[pageIdx]))
+  }
 }
 
-const testIPs = ['66.6.44.4', '2604:a880:800:a1::']
+const testIPs = ['66.6.44.4', '2604:a880:800:a1::', '127.0.0.1', '100::1']
 for (const ip of testIPs) {
   await traceLookup(ip)
 }

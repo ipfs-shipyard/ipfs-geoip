@@ -111,10 +111,10 @@ async function parseBlocks (parse, blocksCsv, geonameLocations, geonameToLocId) 
       )
     }
 
-    const { first } = cidrToRange(row.network)
+    const { first, last } = cidrToRange(row.network)
     entries.push({
       key: uint128ToBytes(first),
-      value: locId
+      value: [locId, uint128ToBytes(last)]
     })
   }
 

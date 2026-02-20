@@ -20,6 +20,15 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
         planet: 'Earth'
       })
     })
+
+    it('fails on 127.0.0.1 (loopback, unmapped)', async () => {
+      try {
+        await geoip.lookup(ipfsGW, '127.0.0.1')
+        expect.fail('should have thrown')
+      } catch (err) {
+        expect(err).to.have.property('message', 'Unmapped range')
+      }
+    })
   })
 
   describe('IPv6 lookup', () => {
@@ -35,6 +44,15 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
         longitude: -74.1403,
         planet: 'Earth'
       })
+    })
+
+    it('fails on 100::1 (discard prefix, unmapped)', async () => {
+      try {
+        await geoip.lookup(ipfsGW, '100::1')
+        expect.fail('should have thrown')
+      } catch (err) {
+        expect(err).to.have.property('message', 'Unmapped range')
+      }
     })
   })
 
