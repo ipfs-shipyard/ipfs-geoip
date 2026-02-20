@@ -29,7 +29,8 @@
     "test": "npm run test:node && npm run test:browser",
     "test:node": "aegir test --target node",
     "test:browser": "aegir test --target browser --files test/**/*.browser.spec.{js,cjs,mjs}",
-    "generate": "node --max-old-space-size=8192 bin/generate.js"
+    "generate": "node --max-old-space-size=8192 bin/generate.js",
+    "update-dataset": "node bin/update-dataset.js"
   },
   "devDependencies": {
     "@ipld/car": "^5.4.0",

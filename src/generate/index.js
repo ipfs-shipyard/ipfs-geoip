@@ -16,7 +16,7 @@ import normalizeName from './overrides.js'
 const PROLLY_AVG_FANOUT = 64
 
 // All data is stored in an ipfs folder called DATA_HASH
-const DATA_HASH = 'bafybeiggln2inqvokpp7rcjpqaou7v73rknemitrv6bp3q67vimthtsopu' // GeoLite2-City-CSV_20250218
+const DATA_HASH = 'bafybeigmt5dv3rn77vw6gevrr6cgm42f3lcjtpda5radbdddg5unobrnom' // GeoLite2-City-CSV_20260220
 const locationsCsv = 'GeoLite2-City-Locations-en.csv'
 const blocksIpv4Csv = 'GeoLite2-City-Blocks-IPv4.csv'
 const blocksIpv6Csv = 'GeoLite2-City-Blocks-IPv6.csv'

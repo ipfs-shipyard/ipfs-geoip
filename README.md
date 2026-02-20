@@ -203,19 +203,31 @@ directory defined in `src/generate/index.js`.
 
 ### Updating GeoLite2 dataset
 
-There is a generator included, that can be run with
+Updating the dataset is a two-step process: first fetch fresh CSV files from
+MaxMind, then rebuild the lookup index.
+
+#### 1. Fetch new CSV data
+
+Requires a free [MaxMind GeoLite2 account](https://www.maxmind.com/en/geolite2/signup)
+and a running IPFS daemon.
+
+```bash
+$ MAXMIND_ACCOUNT_ID=<id> MAXMIND_LICENSE_KEY=<key> npm run update-dataset
+```
+
+This downloads the latest `GeoLite2-City-CSV` zip, extracts the three needed
+CSV files, adds them to IPFS (CIDv1, 1 MiB chunks), exports a
+`geolite2-city-csv.car`, and updates `DATA_HASH` in `src/generate/index.js`.
+
+#### 2. Rebuild the lookup index
 
 ```bash
 $ npm run generate
 ```
 
-This takes quite a long time to import, but you only need to do it once when
-updating the global index used by the lookup feature.
-
-It reads original GeoLite CSV files (IPv4 and IPv6 blocks + locations) from the
-`DATA_HASH` directory defined in `src/generate/index.js`, builds the prolly tree
-index and sharded location table described above, and writes all blocks as
-DAG-CBOR into `ipfs-geoip.car`.
+This reads the CSV files from the `DATA_HASH` directory on IPFS, builds the
+prolly tree index and sharded location table, and writes all blocks as DAG-CBOR
+into `ipfs-geoip.car`.
 
 The root CID is printed to the terminal. It should then be imported to IPFS,
 pinned in multiple locations, and stored as the new `GEOIP_ROOT` in
