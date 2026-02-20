@@ -4,7 +4,7 @@ import * as geoip from '../src/index.js'
 describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
   this.timeout(100 * 1000)
 
-  const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
+  const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://trustless-gateway.link'
 
   describe('IPv4 lookup', () => {
     it('looks up 66.6.44.4 (Ashburn)', async () => {

@@ -1,6 +1,6 @@
 import * as geoip from '../src/index.js'
 
-const ipfsGw = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
+const ipfsGw = process?.env?.IPFS_GATEWAY || 'https://trustless-gateway.link'
 
 if (process.argv.length !== 3) {
   console.log('usage: node lookup.js <ip-address>') // eslint-disable-line no-console

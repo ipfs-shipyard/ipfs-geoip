@@ -8,7 +8,7 @@ import { bytesToUint128, ipToUint128, minBytesToBigint, uint128ToBytes } from '.
 
 export const GEOIP_ROOT = CID.parse('bafyreihwb2rt2kfkzvf3mxgfzzqqbq3ea4bgzwfy5cxz6phdlu3ch55gyq') // GeoLite2-City-CSV_20260220
 
-const defaultGateway = ['https://trustless-gateway.link', 'https://ipfs.io', 'https://dweb.link']
+const defaultGateway = ['https://trustless-gateway.link']
 
 /**
  * @param {object|string} ipfs
