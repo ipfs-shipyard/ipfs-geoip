@@ -113,6 +113,26 @@ export function cidrToRange (cidr) {
   }
 }
 
+// Convert BigInt to minimal-length Uint8Array (strip leading zero bytes)
+export function bigintToMinBytes (n) {
+  if (n === 0n) return new Uint8Array([0])
+  const bytes = []
+  while (n > 0n) {
+    bytes.unshift(Number(n & 0xffn))
+    n >>= 8n
+  }
+  return new Uint8Array(bytes)
+}
+
+// Convert minimal-length Uint8Array back to BigInt
+export function minBytesToBigint (buf) {
+  let n = 0n
+  for (let i = 0; i < buf.length; i++) {
+    n = (n << 8n) | BigInt(buf[i])
+  }
+  return n
+}
+
 export function isLocalIPv4 (address) {
   const parts = address.split('.')
   if (parts[0] === '10') return true

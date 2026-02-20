@@ -4,9 +4,9 @@ import { CID } from 'multiformats/cid'
 import { default as memoize } from 'p-memoize'
 import { MAX_LOOKUP_RETRIES } from './constants.js'
 import { formatData } from './format.js'
-import { ipToUint128, uint128ToBytes } from './ip.js'
+import { bytesToUint128, ipToUint128, minBytesToBigint, uint128ToBytes } from './ip.js'
 
-export const GEOIP_ROOT = CID.parse('bafyreidm3b5bjh625bwnfqp6tdpu5rioo62363dfbmi46rziqrgcgvdwge') // GeoLite2-City-CSV_20250218
+export const GEOIP_ROOT = CID.parse('bafyreibkam3w3ihpm7gzpdkkrgkkcv6fukkwluqboucyrwe2vwti4jjzzu') // GeoLite2-City-CSV_20250218
 
 const defaultGateway = ['https://trustless-gateway.link', 'https://ipfs.io', 'https://dweb.link']
 
@@ -210,8 +210,11 @@ async function _lookup (ipfs, rootCid, ipstring) {
   const indexResult = await traverseIndex(ipfs, metadata.indexRoot, searchKey)
   if (!indexResult) throw new Error('Unmapped range')
 
-  // value is [locId, endKey] where endKey is the last IP in the CIDR range
-  const [locId, endKey] = indexResult.value
+  // value is [locId, endOffsetBytes] where endOffsetBytes encodes
+  // the offset from startKey to the last IP in the range
+  const [locId, endOffsetBytes] = indexResult.value
+  const startInt = bytesToUint128(indexResult.key)
+  const endKey = uint128ToBytes(startInt + minBytesToBigint(endOffsetBytes))
   if (binaryCompare(searchKey, endKey) > 0) throw new Error('Unmapped range')
 
   const pageCids = await getLocTable(ipfs, metadata.locationTableRoot)

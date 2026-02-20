@@ -8,7 +8,7 @@ import { nocache } from 'prolly-trees/cache'
 import { create as createProllyMap } from 'prolly-trees/map'
 import { bf, binaryCompare } from 'prolly-trees/utils'
 import { DATA_FORMAT_VERSION, LOCATION_PAGE_SIZE } from '../constants.js'
-import { cidrToRange, uint128ToBytes } from '../ip.js'
+import { bigintToMinBytes, bytesToUint128, cidrToRange, uint128ToBytes } from '../ip.js'
 import normalizeName from './overrides.js'
 
 // Average branching factor for the prolly tree index.
@@ -230,18 +230,40 @@ async function main (ipfs, car) {
   allEntries.sort((a, b) => binaryCompare(a.key, b.key))
   emit('merge', 'end', { total: allEntries.length })
 
+  // 5b. Merge adjacent ranges with same locId
+  const merged = [allEntries[0]]
+  for (let i = 1; i < allEntries.length; i++) {
+    const prev = merged[merged.length - 1]
+    const curr = allEntries[i]
+    const prevEnd = bytesToUint128(prev.value[1])
+    const currStart = bytesToUint128(curr.key)
+    if (prev.value[0] === curr.value[0] && currStart === prevEnd + 1n) {
+      prev.value[1] = curr.value[1] // extend prev's endKey
+    } else {
+      merged.push(curr)
+    }
+  }
+  emit('merge-dedup', 'end', { before: allEntries.length, after: merged.length })
+
+  // 5c. Encode endKey as compact offset (variable-length bytes)
+  for (const entry of merged) {
+    const start = bytesToUint128(entry.key)
+    const end = bytesToUint128(entry.value[1])
+    entry.value[1] = bigintToMinBytes(end - start)
+  }
+
   // 6. Build location table
   const locTableRootCid = await buildLocationTable(locationArray, car)
 
   // 7. Build prolly tree index
-  const indexRootCid = await buildIndexTree(allEntries, car)
+  const indexRootCid = await buildIndexTree(merged, car)
 
   // 8. Create root metadata node
   const rootMetadata = {
     version: DATA_FORMAT_VERSION,
     indexRoot: indexRootCid,
     locationTableRoot: locTableRootCid,
-    entryCount: allEntries.length,
+    entryCount: merged.length,
     locationCount: locationArray.length,
     pageSize: LOCATION_PAGE_SIZE
   }

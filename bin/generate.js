@@ -56,6 +56,10 @@ async function generate () {
         console.log(`Total index entries: ${event.total}`)
       }
 
+      if (event.type === 'merge-dedup' && event.status === 'end') {
+        console.log(`Merged adjacent ranges: ${event.before} -> ${event.after} (${((1 - event.after / event.before) * 100).toFixed(1)}% reduction)`)
+      }
+
       if (event.type === 'location-table' && event.status === 'end') {
         console.log(`Location table: ${event.pages} pages`)
       }
