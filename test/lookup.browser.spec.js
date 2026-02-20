@@ -22,6 +22,22 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
     })
   })
 
+  describe('IPv6 lookup', () => {
+    it('looks up 2604:a880:800:a1:: (DigitalOcean, Clifton NJ)', async () => {
+      const result = await geoip.lookup(ipfsGW, '2604:a880:800:a1::')
+      expect(result).to.be.eql({
+        country_name: 'USA',
+        country_code: 'US',
+        region_code: 'NJ',
+        city: 'Clifton',
+        postal_code: '07014',
+        latitude: 40.8364,
+        longitude: -74.1403,
+        planet: 'Earth'
+      })
+    })
+  })
+
   describe('lookupPretty', () => {
     it('fails on 127.0.0.1', async () => {
       try {

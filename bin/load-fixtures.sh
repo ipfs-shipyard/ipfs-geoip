@@ -90,7 +90,7 @@ async function traceLookup(ip) {
   await getBlock(CID.asCID(locTable[pageIdx]))
 }
 
-const testIPs = ['66.6.44.4']
+const testIPs = ['66.6.44.4', '2604:a880:800:a1::']
 for (const ip of testIPs) {
   await traceLookup(ip)
 }
