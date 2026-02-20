@@ -6,7 +6,7 @@ import { MAX_LOOKUP_RETRIES } from './constants.js'
 import { formatData } from './format.js'
 import { bytesToUint128, ipToUint128, minBytesToBigint, uint128ToBytes } from './ip.js'
 
-export const GEOIP_ROOT = CID.parse('bafyreibkam3w3ihpm7gzpdkkrgkkcv6fukkwluqboucyrwe2vwti4jjzzu') // GeoLite2-City-CSV_20250218
+export const GEOIP_ROOT = CID.parse('bafyreihwb2rt2kfkzvf3mxgfzzqqbq3ea4bgzwfy5cxz6phdlu3ch55gyq') // GeoLite2-City-CSV_20260220
 
 const defaultGateway = ['https://trustless-gateway.link', 'https://ipfs.io', 'https://dweb.link']
 
