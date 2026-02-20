@@ -24,7 +24,8 @@ async function getRawBlock (ipfs, cid) {
   }
 
   const gateways = Array.isArray(ipfs) ? ipfs : [ipfs]
-  for (const url of gateways) { // eslint-disable-line no-unreachable-loop
+  let lastErr
+  for (const url of gateways) {
     const gwUrl = new URL(url)
     gwUrl.pathname = `/ipfs/${cid.toString()}`
     gwUrl.search = '?format=raw'
@@ -38,9 +39,10 @@ async function getRawBlock (ipfs, cid) {
       if (!res.ok) throw res
       return new Uint8Array(await res.arrayBuffer())
     } catch (cause) {
-      throw new Error(`unable to fetch raw block for CID ${cid}`, { cause })
+      lastErr = cause
     }
   }
+  throw new Error(`unable to fetch raw block for CID ${cid}`, { cause: lastErr })
 }
 
 async function getBlock (ipfs, cid, numTry = 1) {
@@ -78,6 +80,10 @@ class LRUCache {
     if (this._map.size > this._max) {
       this._map.delete(this._map.keys().next().value)
     }
+  }
+
+  delete (key) {
+    this._map.delete(key)
   }
 }
 
