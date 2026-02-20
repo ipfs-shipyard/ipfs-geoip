@@ -55,24 +55,79 @@ async function getBlock (ipfs, cid, numTry = 1) {
   }
 }
 
-// Caches for metadata and location table
+// Bounded LRU cache backed by Map (preserves insertion order).
+// On hit: delete + re-set moves entry to end.
+// On insert: evict oldest (first) entry if over capacity.
+class LRUCache {
+  constructor (maxSize) {
+    this._max = maxSize
+    this._map = new Map()
+  }
+
+  get (key) {
+    if (!this._map.has(key)) return undefined
+    const value = this._map.get(key)
+    this._map.delete(key)
+    this._map.set(key, value)
+    return value
+  }
+
+  set (key, value) {
+    if (this._map.has(key)) this._map.delete(key)
+    this._map.set(key, value)
+    if (this._map.size > this._max) {
+      this._map.delete(this._map.keys().next().value)
+    }
+  }
+}
+
+async function getCachedBlock (ipfs, cid, cache) {
+  const key = cid.toString()
+  const cached = cache.get(key)
+  if (cached !== undefined) return cached
+  const promise = getBlock(ipfs, cid)
+  cache.set(key, promise)
+  try {
+    return await promise
+  } catch (e) {
+    cache.delete(key)
+    throw e
+  }
+}
+
+// Index tree nodes (branch/leaf): upper levels are heavily shared across lookups
+const indexBlockCache = new LRUCache(512)
+// Location table pages (304 total in current dataset): most fit permanently
+const locationPageCache = new LRUCache(512)
+
+// Caches for metadata and location table root (1 entry each, always needed)
 const metadataCache = new Map()
 const locTableCache = new Map()
 
 async function getMetadata (ipfs, rootCid) {
   const key = rootCid.toString()
   if (metadataCache.has(key)) return metadataCache.get(key)
-  const meta = await getBlock(ipfs, rootCid)
-  metadataCache.set(key, meta)
-  return meta
+  const promise = getBlock(ipfs, rootCid)
+  metadataCache.set(key, promise)
+  try {
+    return await promise
+  } catch (e) {
+    metadataCache.delete(key)
+    throw e
+  }
 }
 
 async function getLocTable (ipfs, locTableRootCid) {
   const key = locTableRootCid.toString()
   if (locTableCache.has(key)) return locTableCache.get(key)
-  const table = await getBlock(ipfs, locTableRootCid)
-  locTableCache.set(key, table)
-  return table
+  const promise = getBlock(ipfs, locTableRootCid)
+  locTableCache.set(key, promise)
+  try {
+    return await promise
+  } catch (e) {
+    locTableCache.delete(key)
+    throw e
+  }
 }
 
 function binaryCompare (a, b) {
@@ -96,7 +151,7 @@ async function traverseIndex (ipfs, indexRootCid, searchKey) {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const node = await getBlock(ipfs, currentCid)
+    const node = await getCachedBlock(ipfs, currentCid, indexBlockCache)
 
     if (node.branch) {
       const [, entries] = node.branch
@@ -140,7 +195,7 @@ async function fetchLocation (ipfs, pageCids, locationId, pageSize) {
   const pageCid = CID.asCID(pageCids[pageIndex])
   if (!pageCid) throw new Error(`Invalid page CID at index ${pageIndex}`)
 
-  const page = await getBlock(ipfs, pageCid)
+  const page = await getCachedBlock(ipfs, pageCid, locationPageCache)
   if (!Array.isArray(page) || offsetInPage >= page.length) {
     throw new Error(`Location entry ${locationId} not found in page`)
   }
