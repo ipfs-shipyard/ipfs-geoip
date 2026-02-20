@@ -48,7 +48,7 @@ version `N.N.N` as a [remote copy from jsDelivr](https://www.jsdelivr.com/packag
 ```html
 <script type="module">
   import { lookup } from 'https://cdn.jsdelivr.net/npm/ipfs-geoip@N.N.N/dist/index.min.js';
-  const gateway = 'https://ipfs.io'
+  const gateway = 'https://trustless-gateway.link'
   console.log(await lookup(gateway, '66.6.44.4'))
 </script>
 ```
@@ -79,7 +79,7 @@ and parsing them as DAG-CBOR locally via [@ipld/dag-cbor](https://www.npmjs.com/
 const geoip = require('ipfs-geoip')
 const exampleIp = '66.6.44.4'
 
-const gateways = ['https://ipfs.io', 'https://dweb.link']
+const gateways = ['https://trustless-gateway.link', 'https://example.com']
 
 try {
   const result = await geoip.lookup(gateways, exampleIp)
