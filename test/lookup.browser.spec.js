@@ -4,7 +4,7 @@ import * as geoip from '../src/index.js'
 describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses', function () {
   this.timeout(100 * 1000)
 
-  const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://ipfs.io'
+  const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://trustless-gateway.link'
 
   it('fails on 127.0.0.1', async () => {
     try {
