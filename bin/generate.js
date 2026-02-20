@@ -20,28 +20,44 @@ function handleNoApi () {
 const carFilename = 'ipfs-geoip.car'
 const ipfs = create()
 
-// -- CLI interaction
 async function generate () {
   try {
     const id = await ipfs.id()
     if (!id) handleNoApi()
     const gauge = new Gauge()
-    let length = 0
-    let counter = 0
-    const fakeRoot = CID.parse('bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354') // will be replaced with the real root before writer.close()
+    let putCount = 0
+
+    const fakeRoot = CID.parse('bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354')
     const { writer, out } = await CarWriter.create([fakeRoot])
     Readable.from(out).pipe(fs.createWriteStream(carFilename))
+
     gen.progress.on('progress', (event) => {
-      if (event.type === 'node') {
-        length = event.length
+      if (event.type === 'put') {
+        putCount++
+        if (putCount % 100 === 0) {
+          gauge.pulse(`${putCount} blocks written`)
+        }
       }
 
-      if (event.type === 'put') {
-        counter++
-        const objects = length / 32
-        const completed = counter / objects
-        gauge.pulse(`${counter}/${objects.toFixed()} (${(completed * 100).toFixed()}%)`)
-        gauge.show('exporting DAG-CBOR objects to a CAR', completed)
+      if (event.type === 'dedup') {
+        console.log(`Deduplicated ${event.geonames} geonames into ${event.locations} locations`)
+      }
+
+      if (event.type === 'blocks-ipv4' && event.status === 'end') {
+        console.log(`IPv4 blocks: ${event.count}`)
+      }
+
+      if (event.type === 'blocks-ipv6') {
+        if (event.status === 'end') console.log(`IPv6 blocks: ${event.count}`)
+        if (event.status === 'skip') console.log('IPv6 blocks: skipped (file not found)')
+      }
+
+      if (event.type === 'merge' && event.status === 'end') {
+        console.log(`Total index entries: ${event.total}`)
+      }
+
+      if (event.type === 'location-table' && event.status === 'end') {
+        console.log(`Location table: ${event.pages} pages`)
       }
 
       if (event.status === 'start' && event.type !== 'put') {
@@ -56,7 +72,10 @@ async function generate () {
     const fd = await fsopen(carFilename, 'r+')
     await CarWriter.updateRootsInFile(fd, newRoots)
     await fsclose(fd)
-    console.log(`Finished with root CID ${rootCid}, all blocks exported to ${carFilename}`)
+    console.log(`\nFinished with root CID ${rootCid}`)
+    console.log(`Blocks written: ${putCount}`)
+    console.log(`CAR file: ${carFilename}`)
+    console.log(`\nUpdate GEOIP_ROOT in src/lookup.js to: ${rootCid}`)
     process.exit(0)
   } catch (err) {
     console.error(err.stack)

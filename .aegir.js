@@ -27,14 +27,19 @@ export default {
       // set up a server to serve the fixtures
       const server = http.createServer((req, res) => {
         const cidString = req.url.replace('/ipfs/', '').split('?')[0]
-        const mockBlock = fs.readFileSync(`./test/fixtures/${cidString}.raw.bin`, null)
-
-        res.writeHead(200, {
-          'access-control-allow-origin': '*', // allow CORS requests
-          'Content-Type': 'application/vnd.ipld.raw',
-          'Content-Length': mockBlock.length
-        })
-        res.end(mockBlock)
+        const fixturePath = `./test/fixtures/${cidString}.raw.bin`
+        try {
+          const mockBlock = fs.readFileSync(fixturePath, null)
+          res.writeHead(200, {
+            'access-control-allow-origin': '*', // allow CORS requests
+            'Content-Type': 'application/vnd.ipld.raw',
+            'Content-Length': mockBlock.length
+          })
+          res.end(mockBlock)
+        } catch {
+          res.writeHead(404, { 'access-control-allow-origin': '*' })
+          res.end(`Fixture not found: ${cidString}`)
+        }
       })
       let gwUrl = process.env.IPFS_GATEWAY
       if (!gwUrl) {
