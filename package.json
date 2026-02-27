@@ -29,27 +29,25 @@
     "test": "npm run test:node && npm run test:browser",
     "test:node": "aegir test --target node",
     "test:browser": "aegir test --target browser --files test/**/*.browser.spec.{js,cjs,mjs}",
-    "generate": "node bin/generate.js"
+    "generate": "node --max-old-space-size=8192 bin/generate.js",
+    "update-dataset": "node bin/update-dataset.js"
   },
   "devDependencies": {
     "@ipld/car": "^5.4.0",
     "@ipld/dag-cbor": "^9.2.2",
     "aegir": "^45.0.9",
-    "bluebird": "^3.7.2",
     "chai": "^4.3.6",
     "chai-as-promised": "^7.1.1",
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.6.0",
     "esmock": "^2.7.0",
     "gauge": "^4.0.4",
-    "ip": "^2.0.1",
     "it-concat": "^2.0.0",
     "kubo-rpc-client": "^3.0.1",
-    "lodash-es": "^4.17.21",
     "multiformats": "^13.3.2",
-    "multihashes": "^4.0.3",
     "p-memoize": "^7.1.1",
     "pre-commit": "^1.2.2",
+    "prolly-trees": "^1.0.4",
     "uint8arrays": "^3.1.0"
   },
   "browser": {

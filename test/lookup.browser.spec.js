@@ -6,28 +6,53 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
 
   const ipfsGW = process?.env?.IPFS_GATEWAY || 'https://trustless-gateway.link'
 
-  it('fails on 127.0.0.1', async () => {
-    try {
-      await geoip.lookup(ipfsGW, '127.0.0.1')
-    } catch (err) {
-      expect(err).to.have.property('message', 'Unmapped range')
-    }
+  describe('IPv4 lookup', () => {
+    it('looks up 66.6.44.4 (Ashburn)', async () => {
+      const result = await geoip.lookup(ipfsGW, '66.6.44.4')
+      expect(result).to.be.eql({
+        country_name: 'USA',
+        country_code: 'US',
+        region_code: 'VA',
+        city: 'Ashburn',
+        postal_code: '20149',
+        latitude: 39.0469,
+        longitude: -77.4903,
+        planet: 'Earth'
+      })
+    })
+
+    it('fails on 127.0.0.1 (loopback, unmapped)', async () => {
+      try {
+        await geoip.lookup(ipfsGW, '127.0.0.1')
+        expect.fail('should have thrown')
+      } catch (err) {
+        expect(err).to.have.property('message', 'Unmapped range')
+      }
+    })
   })
 
-  it('looks up 66.6.44.4', async () => {
-    this.retries(3)
-    const result = await geoip.lookup(ipfsGW, '66.6.44.4')
-    expect(
-      result
-    ).to.be.eql({
-      country_name: 'USA',
-      country_code: 'US',
-      region_code: 'VA',
-      city: 'Ashburn',
-      postal_code: '20149',
-      latitude: 39.0469,
-      longitude: -77.4903,
-      planet: 'Earth'
+  describe('IPv6 lookup', () => {
+    it('looks up 2604:a880:800:a1:: (DigitalOcean, Clifton NJ)', async () => {
+      const result = await geoip.lookup(ipfsGW, '2604:a880:800:a1::')
+      expect(result).to.be.eql({
+        country_name: 'USA',
+        country_code: 'US',
+        region_code: 'NJ',
+        city: 'Clifton',
+        postal_code: '07014',
+        latitude: 40.8364,
+        longitude: -74.1403,
+        planet: 'Earth'
+      })
+    })
+
+    it('fails on 100::1 (discard prefix, unmapped)', async () => {
+      try {
+        await geoip.lookup(ipfsGW, '100::1')
+        expect.fail('should have thrown')
+      } catch (err) {
+        expect(err).to.have.property('message', 'Unmapped range')
+      }
     })
   })
 
@@ -40,11 +65,19 @@ describe('lookup via HTTP Gateway supporting application/vnd.ipld.raw responses'
       }
     })
 
-    it('looks up 66.6.44.4', async () => {
+    it('looks up /ip4/66.6.44.4', async () => {
       const result = await geoip.lookupPretty(ipfsGW, '/ip4/66.6.44.4')
       expect(
         result.formatted
       ).to.be.eql('Ashburn, VA, USA, Earth')
+    })
+
+    it('fails on ::1 (IPv6 loopback)', async () => {
+      try {
+        await geoip.lookupPretty(ipfsGW, '/ip6/::1')
+      } catch (err) {
+        expect(err).to.have.property('message', 'Unmapped range')
+      }
     })
   })
 })

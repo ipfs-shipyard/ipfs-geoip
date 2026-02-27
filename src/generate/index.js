@@ -1,33 +1,30 @@
 import { EventEmitter } from 'events'
 import * as dagCbor from '@ipld/dag-cbor'
-import { default as Promise } from 'bluebird'
-import ip from 'ip'
 import concat from 'it-concat'
-import { chunk, reduce } from 'lodash-es'
+import * as Block from 'multiformats/block'
 import { CID } from 'multiformats/cid'
 import { sha256 } from 'multiformats/hashes/sha2'
+import { nocache } from 'prolly-trees/cache'
+import { create as createProllyMap } from 'prolly-trees/map'
+import { bf, binaryCompare } from 'prolly-trees/utils'
+import { DATA_FORMAT_VERSION, LOCATION_PAGE_SIZE } from '../constants.js'
+import { bigintToMinBytes, bytesToUint128, cidrToRange, uint128ToBytes } from '../ip.js'
 import normalizeName from './overrides.js'
 
-// Btree size
-const CHILDREN = 32
+// Average branching factor for the prolly tree index.
+// Higher = wider nodes, fewer levels, fewer fetches per lookup.
+const PROLLY_AVG_FANOUT = 64
 
 // All data is stored in an ipfs folder called DATA_HASH
-// It includes two files
-//
-//     DATA_HASH
-//     |- locationsCsv
-//     |- blocksCsv
-const DATA_HASH = 'bafybeiggln2inqvokpp7rcjpqaou7v73rknemitrv6bp3q67vimthtsopu' // GeoLite2-City-CSV_20250218
+const DATA_HASH = 'bafybeigmt5dv3rn77vw6gevrr6cgm42f3lcjtpda5radbdddg5unobrnom' // GeoLite2-City-CSV_20260220
 const locationsCsv = 'GeoLite2-City-Locations-en.csv'
-const blocksCsv = 'GeoLite2-City-Blocks-IPv4.csv'
+const blocksIpv4Csv = 'GeoLite2-City-Blocks-IPv4.csv'
+const blocksIpv6Csv = 'GeoLite2-City-Blocks-IPv6.csv'
 
 const progress = new EventEmitter()
 
 function emit (type, status, attrs) {
-  progress.emit('progress', Object.assign({}, {
-    type,
-    status
-  }, attrs))
+  progress.emit('progress', Object.assign({}, { type, status }, attrs))
 }
 
 async function parseCountries (parse, locations) {
@@ -37,8 +34,8 @@ async function parseCountries (parse, locations) {
     cast: false,
     skip_empty_lines: true
   })
-  const result = reduce(parsed, (acc, row) => {
-    if (typeof acc[row.country_iso_code] != null) { // eslint-disable-line  valid-typeof
+  const result = parsed.reduce((acc, row) => {
+    if (typeof acc[row.country_iso_code] != null) { // eslint-disable-line valid-typeof
       acc[row.country_iso_code] = normalizeName(row.country_name)
     }
     return acc
@@ -55,7 +52,7 @@ async function parseLocations (parse, locations, countries) {
     skip_empty_lines: true,
     comment: '#'
   })
-  const result = reduce(parsed, (acc, row) => {
+  const result = parsed.reduce((acc, row) => {
     acc[row.geoname_id] = [
       countries[row.country_iso_code],
       row.country_iso_code,
@@ -68,25 +65,44 @@ async function parseLocations (parse, locations, countries) {
   return result
 }
 
-async function parseBlocks (parse, blocks, locations) {
+// Assign sequential location_ids and build a location array
+// where index = location_id
+function deduplicateLocations (geonameLocations) {
+  const locationArray = []
+  const geonameToLocId = new Map()
+  let locId = 0
+
+  for (const [geonameId, data] of Object.entries(geonameLocations)) {
+    geonameToLocId.set(geonameId, locId)
+    locationArray.push(data)
+    locId++
+  }
+
+  return { geonameToLocId, locationArray }
+}
+
+// Parse IP blocks CSV and produce index entries with 128-bit keys
+async function parseBlocks (parse, blocksCsv, geonameLocations, geonameToLocId) {
   emit('blocks', 'start')
-  const parsed = parse(blocks, {
+  const parsed = parse(blocksCsv, {
     columns: true,
     cast: false,
     skip_empty_lines: true,
     comment: '#'
   })
-  let lastEnd = 0
-  const result = reduce(parsed, (acc, row) => {
-    const { firstAddress, lastAddress } = ip.cidrSubnet(row.network)
-    const start = ip.toLong(firstAddress)
-    const end = ip.toLong(lastAddress)
 
+  const entries = []
+
+  for (const row of parsed) {
     const { geoname_id } = row // eslint-disable-line camelcase
-    const geonameData = locations[geoname_id] // eslint-disable-line camelcase
+    if (!geoname_id) continue // eslint-disable-line camelcase
 
-    // conform to legacy input format by filling up missing data the first time
-    // a geoname is inspected
+    const locId = geonameToLocId.get(geoname_id) // eslint-disable-line camelcase
+    if (locId === undefined) continue
+
+    const geonameData = geonameLocations[geoname_id] // eslint-disable-line camelcase
+
+    // fill postal_code, lat, lon on first occurrence per geoname
     if (Array.isArray(geonameData) && geonameData.length < 7) {
       geonameData.push(
         String(row.postal_code),
@@ -95,81 +111,83 @@ async function parseBlocks (parse, blocks, locations) {
       )
     }
 
-    // unmapped range?
-    if ((start - lastEnd) > 1) {
-      acc.push({
-        min: lastEnd + 1,
-        data: 0
-      })
-    }
-
-    acc.push({
-      min: start,
-      data: geonameData || 0
+    const { first, last } = cidrToRange(row.network)
+    entries.push({
+      key: uint128ToBytes(first),
+      value: [locId, uint128ToBytes(last)]
     })
+  }
 
-    lastEnd = end
-
-    return acc
-  }, [])
   emit('blocks', 'end')
-  return result
+  return entries
 }
 
-async function putBlock (data, min, car) {
-  let cid
-  try { // eslint-disable-line no-useless-catch
-    const bytes = dagCbor.encode(data)
-    const hash = await sha256.digest(bytes)
-    cid = CID.create(1, dagCbor.code, hash)
-    await car.put({ cid, bytes })
-  } catch (e) {
-    /*
-    console.error('failed data')
-    console.error(JSON.stringify(data, null, 2))
-    */
-    throw e
-  }
+async function putBlock (data, car) {
+  const bytes = dagCbor.encode(data)
+  const hash = await sha256.digest(bytes)
+  const cid = CID.create(1, dagCbor.code, hash)
+  await car.put({ cid, bytes })
   emit('put', 'end')
-  return {
-    min,
-    cid
-  }
+  return cid
 }
 
-// Create a btree leaf with data
-function createLeaf (data) {
-  return { data }
-}
-// Create a btree node with data
-function createNode (data) {
-  return {
-    mins: data.map((x) => x.min),
-    links: data.map((x) => CID.asCID(x.cid)).filter(cid => cid) // valid CID instances are turned into DAG-CBOR links
-  }
-}
+// Chunk location array into pages, store each page as a block,
+// then store a root node with an array of page CIDs
+async function buildLocationTable (locationArray, car) {
+  emit('location-table', 'start')
+  const pageCids = []
+  const pageCount = Math.ceil(locationArray.length / LOCATION_PAGE_SIZE)
 
-async function toNode (things, car) {
-  const length = things.length
-
-  if (length <= CHILDREN) {
-    const first = things[0]
-    const min = first.min
-
-    if (!first.cid) {
-      return putBlock(createLeaf(things), min, car)
-    }
-
-    return putBlock(createNode(things), min, car)
+  for (let i = 0; i < pageCount; i++) {
+    const start = i * LOCATION_PAGE_SIZE
+    const end = Math.min(start + LOCATION_PAGE_SIZE, locationArray.length)
+    const page = locationArray.slice(start, end)
+    const cid = await putBlock(page, car)
+    pageCids.push(cid)
   }
 
-  const cpuCores = navigator.hardwareConcurrency || 1
+  const locTableRootCid = await putBlock(pageCids, car)
+  emit('location-table', 'end', { pages: pageCount })
+  return locTableRootCid
+}
 
-  // divide
-  return Promise.map(chunk(things, CHILDREN), (res) => toNode(res, car), {
-    concurrency: cpuCores * 2
-  })
-    .then((res) => toNode(res, car))
+// Build prolly tree index from sorted entries
+async function buildIndexTree (entries, car) {
+  emit('index-tree', 'start')
+
+  entries.sort((a, b) => binaryCompare(a.key, b.key))
+
+  const chunker = bf(PROLLY_AVG_FANOUT)
+
+  // in-memory block cache for tree construction
+  const blockCache = new Map()
+  const get = async (cid) => {
+    const bytes = blockCache.get(cid.toString())
+    if (!bytes) throw new Error(`Block not found: ${cid}`)
+    return Block.decode({ bytes, cid, codec: dagCbor, hasher: sha256 })
+  }
+
+  let root
+  for await (const node of createProllyMap({
+    get,
+    compare: binaryCompare,
+    list: entries,
+    sorted: true,
+    chunker,
+    codec: dagCbor,
+    hasher: sha256,
+    cache: nocache
+  })) {
+    const block = await node.block
+    blockCache.set(block.cid.toString(), block.bytes)
+    await car.put({ cid: block.cid, bytes: block.bytes })
+    emit('put', 'end')
+    root = node
+  }
+
+  const rootCid = (await root.block).cid
+  emit('index-tree', 'end')
+  return rootCid
 }
 
 async function file (ipfs, dir) {
@@ -179,23 +197,90 @@ async function file (ipfs, dir) {
 
 async function main (ipfs, car) {
   const { parse } = await import(process.browser ? 'csv-parse/browser/esm/sync' : 'csv-parse/sync')
-  const locations = await file(ipfs, locationsCsv)
-  const countries = await parseCountries(parse, locations)
-  const locationsWithCountries = await parseLocations(parse, locations, countries)
-  const blocks = await file(ipfs, blocksCsv)
-  let result = await parseBlocks(parse, blocks, locationsWithCountries)
-  emit('node', 'start', { length: result.length })
-  result = await toNode(result, car)
-  emit('node', 'end')
-  return result.cid
+
+  // 1. Parse locations
+  const locCsv = await file(ipfs, locationsCsv)
+  const countries = await parseCountries(parse, locCsv)
+  const geonameLocations = await parseLocations(parse, locCsv, countries)
+
+  // 2. Deduplicate locations into sequential table
+  const { geonameToLocId, locationArray } = deduplicateLocations(geonameLocations)
+  emit('dedup', 'end', {
+    geonames: Object.keys(geonameLocations).length,
+    locations: locationArray.length
+  })
+
+  // 3. Parse IPv4 blocks
+  const ipv4Csv = await file(ipfs, blocksIpv4Csv)
+  const ipv4Entries = await parseBlocks(parse, ipv4Csv, geonameLocations, geonameToLocId)
+  emit('blocks-ipv4', 'end', { count: ipv4Entries.length })
+
+  // 4. Parse IPv6 blocks (if available)
+  let ipv6Entries = []
+  try {
+    const ipv6Csv = await file(ipfs, blocksIpv6Csv)
+    ipv6Entries = await parseBlocks(parse, ipv6Csv, geonameLocations, geonameToLocId)
+    emit('blocks-ipv6', 'end', { count: ipv6Entries.length })
+  } catch {
+    emit('blocks-ipv6', 'skip')
+  }
+
+  // 5. Merge and sort all index entries
+  const allEntries = [...ipv4Entries, ...ipv6Entries]
+  allEntries.sort((a, b) => binaryCompare(a.key, b.key))
+  emit('merge', 'end', { total: allEntries.length })
+
+  // 5b. Merge adjacent ranges with same locId
+  const merged = [allEntries[0]]
+  for (let i = 1; i < allEntries.length; i++) {
+    const prev = merged[merged.length - 1]
+    const curr = allEntries[i]
+    const prevEnd = bytesToUint128(prev.value[1])
+    const currStart = bytesToUint128(curr.key)
+    if (prev.value[0] === curr.value[0] && currStart === prevEnd + 1n) {
+      prev.value[1] = curr.value[1] // extend prev's endKey
+    } else {
+      merged.push(curr)
+    }
+  }
+  emit('merge-dedup', 'end', { before: allEntries.length, after: merged.length })
+
+  // 5c. Encode endKey as compact offset (variable-length bytes)
+  for (const entry of merged) {
+    const start = bytesToUint128(entry.key)
+    const end = bytesToUint128(entry.value[1])
+    entry.value[1] = bigintToMinBytes(end - start)
+  }
+
+  // 6. Build location table
+  const locTableRootCid = await buildLocationTable(locationArray, car)
+
+  // 7. Build prolly tree index
+  const indexRootCid = await buildIndexTree(merged, car)
+
+  // 8. Create root metadata node
+  const rootMetadata = {
+    version: DATA_FORMAT_VERSION,
+    indexRoot: indexRootCid,
+    locationTableRoot: locTableRootCid,
+    entryCount: merged.length,
+    locationCount: locationArray.length,
+    pageSize: LOCATION_PAGE_SIZE
+  }
+  const rootCid = await putBlock(rootMetadata, car)
+  emit('root', 'end')
+
+  return rootCid
 }
 
 export default {
   parseCountries,
   parseLocations,
+  deduplicateLocations,
   parseBlocks,
+  buildLocationTable,
+  buildIndexTree,
   putBlock,
-  toNode,
   main,
   progress
 }

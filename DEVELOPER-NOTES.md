@@ -1,9 +1,26 @@
-# Load fixtures
+# Developer notes
 
-We need to load a fixture with the following command:
+## Regenerating test fixtures
+
+Test fixtures are raw DAG-CBOR blocks saved to `test/fixtures/<cid>.raw.bin`.
+They need to be regenerated whenever `GEOIP_ROOT` changes.
+
+Requires a running Kubo node with the current dataset imported:
 
 ```bash
-./bin/load-fixtures.sh bafyreif3tfdpr5n4jdrbielmcapwvbpcthepfkwq2vwonmlhirbjmotedi
+ipfs dag import ipfs-geoip.car
+./bin/load-fixtures.sh
 ```
 
-then, we can do `npm run test:node -- -g 'lookup via HTTP Gateway'` to run a test that will tell us of any subsequent fixtures we need to load, and replace the CID in the above command with the CID that the test hangs on, and repeat.
+The script traces lookups for a set of test IPs, records every CID fetched
+along the way, and saves each block as a fixture file.
+
+After regenerating, run the tests to make sure everything passes:
+
+```bash
+npm test
+```
+
+## Updating the GeoLite2 dataset
+
+See the "Updating GeoLite2 dataset" section in README.md.

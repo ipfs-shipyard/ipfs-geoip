@@ -35,3 +35,4 @@ node_modules
 
 dist
 ipfs-geoip.car
+geolite2-city-csv.car

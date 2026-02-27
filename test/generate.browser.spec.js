@@ -76,91 +76,55 @@ describe('generate', () => {
     })
   })
 
-  it('parseBlocks', () => {
-    return expect(
-      gen.parseBlocks(parse, blocks, {
-        765876: [
-          'Poland',
-          'PL',
-          '06',
-          'Lublin'
-        ],
-        3039163: [
-          'Andorra',
-          'AD',
-          '06',
-          'Sant Julià de Lòria'
-        ],
-        5391959: [
-          'USA',
-          'US',
-          'CA',
-          'San Francisco'
-        ],
-        12042053: [
-          'United Arab Emirates',
-          'AE',
-          'AZ',
-          'Musaffah City'
-        ]
-      })
-    ).to.eventually.be.eql([
-      {
-        data: 0,
-        min: 1
-      },
-      {
-        data: [
-          'Andorra',
-          'AD',
-          '06',
-          'Sant Julià de Lòria',
-          '',
-          42.4678,
-          1.5005
-        ],
-        min: 3265158337
-      },
-      {
-        data: [
-          'United Arab Emirates',
-          'AE',
-          'AZ',
-          'Musaffah City',
-          '',
-          24.3613,
-          54.4803
-        ],
-        min: 1580939265
-      },
-      {
-        data: 0,
-        min: 1580939519
-      },
-      {
-        data: [
-          'Poland',
-          'PL',
-          '06',
-          'Lublin',
-          '20-128',
-          51.2574,
-          22.585
-        ],
-        min: 3586367233
-      },
-      {
-        data: [
-          'USA',
-          'US',
-          'CA',
-          'San Francisco',
-          '94119',
-          37.7794,
-          -122.4176
-        ],
-        min: 37260033
-      }
-    ])
+  it('deduplicateLocations', () => {
+    const geonameLocations = {
+      765876: ['Poland', 'PL', '06', 'Lublin'],
+      3039163: ['Andorra', 'AD', '06', 'Sant Julià de Lòria'],
+      5391959: ['USA', 'US', 'CA', 'San Francisco'],
+      12042053: ['United Arab Emirates', 'AE', 'AZ', 'Musaffah City']
+    }
+    const result = gen.deduplicateLocations(geonameLocations)
+
+    expect(result.locationArray).to.have.length(4)
+    expect(result.geonameToLocId.size).to.equal(4)
+
+    // each geoname maps to a unique location_id
+    const locIds = new Set(result.geonameToLocId.values())
+    expect(locIds.size).to.equal(4)
+
+    // location_id correctly indexes into locationArray
+    for (const [geonameId, locId] of result.geonameToLocId) {
+      expect(result.locationArray[locId]).to.deep.equal(geonameLocations[geonameId])
+    }
+  })
+
+  it('parseBlocks', async () => {
+    const geonameLocations = {
+      765876: ['Poland', 'PL', '06', 'Lublin'],
+      3039163: ['Andorra', 'AD', '06', 'Sant Julià de Lòria'],
+      5391959: ['USA', 'US', 'CA', 'San Francisco'],
+      12042053: ['United Arab Emirates', 'AE', 'AZ', 'Musaffah City']
+    }
+    const { geonameToLocId } = gen.deduplicateLocations(geonameLocations)
+
+    const entries = await gen.parseBlocks(parse, blocks, geonameLocations, geonameToLocId)
+
+    expect(entries).to.have.length(4)
+
+    // each entry has a key (Uint8Array) and value [locId, endKey]
+    for (const entry of entries) {
+      expect(entry.key).to.be.instanceOf(Uint8Array)
+      expect(entry.key.length).to.equal(16) // 128-bit start key
+      expect(entry.value).to.be.an('array').with.length(2)
+      expect(entry.value[0]).to.be.a('number').greaterThanOrEqual(0)
+      expect(entry.value[1]).to.be.instanceOf(Uint8Array)
+      expect(entry.value[1].length).to.equal(16) // 128-bit end key
+    }
+
+    // location data was augmented with postal/lat/lon
+    expect(geonameLocations['3039163']).to.have.length(7)
+    expect(geonameLocations['3039163'][4]).to.equal('')
+    expect(geonameLocations['3039163'][5]).to.equal(42.4678)
+    expect(geonameLocations['3039163'][6]).to.equal(1.5005)
   })
 })
