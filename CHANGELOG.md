@@ -1,3 +1,13 @@
+## [9.3.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.2.0...v9.3.0) (2026-02-27)
+
+### Features
+
+* add IPv6, reduce size, update to GeoLite2-City-CSV_20260220 ([#120](https://github.com/ipfs-shipyard/ipfs-geoip/issues/120)) ([ade9728](https://github.com/ipfs-shipyard/ipfs-geoip/commit/ade9728a5d52066d743e38e53d03d9b5f446700e))
+
+### Trivial Changes
+
+* replace ipfs.io with trustless-gateway.link ([#119](https://github.com/ipfs-shipyard/ipfs-geoip/issues/119)) ([37be728](https://github.com/ipfs-shipyard/ipfs-geoip/commit/37be728a09042bdcaaf1eb58c5200ce902ccd771))
+
 ## [9.2.0](https://github.com/ipfs-shipyard/ipfs-geoip/compare/v9.1.1...v9.2.0) (2025-02-19)
 
 ### Features
