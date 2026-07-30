@@ -1,3 +1,14 @@
+> [!IMPORTANT]
+> **This project is no longer maintained and the repository is archived.**
+>
+> The code and the published dataset are still here and still usable. The last
+> GeoLite2 refresh was `GeoLite2-City-CSV_20260220`, and there will not be
+> another one, so lookups will drift further from reality over time.
+>
+> The repository can be unarchived, but only for a named maintainer who commits
+> to keeping it up. If that is you, reach out to the
+> [IPFS Foundation](https://ipfsfoundation.org/about/).
+
 # IPFS GeoIP
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](http://ipn.io)
@@ -263,9 +274,15 @@ Pretty result: New York, NY, USA, Earth
 
 ## Contribute
 
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/ipfs-geoip/issues)!
+This repository is archived and is not accepting contributions. Drive-by patches
+will not reopen it. Unarchiving requires someone willing to be named as
+maintainer and to keep the dataset refreshed.
 
-This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
+If that is you, contact the [IPFS Foundation](https://ipfsfoundation.org/about/).
+Forking is fine too; the [Maintenance](#maintenance) section above documents how
+to refresh the dataset.
+
+The IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md) still applies.
 
 ### Want to hack on IPFS?
 
